@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Bus Tracker</string>
+    <string name="email">Email Addresss</string>
+    <string name="password">Password</string>
+    <string name="password2">Re-enter password</string>
+    <string name="login">LOGIN</string>
+    <string name="forgot"><u>Forgot Password?</u></string>
+    <string name="create"><u>Not A Member? Sign up now.</u></string>
+    <string name="back">Back</string>
+    <string name="password_desc">We just need your registered email to send your password reset instructions.</string>
+    <string name="reset">RESET PASSWORD</string>
+    <string name="create_desc">Register Your Account</string>
+    <string name="register">REGISTER</string>
+    <string name="member">Already a Member? Sign in.</string>
+    <string name="logo_desc">logo</string>>
 </resources>

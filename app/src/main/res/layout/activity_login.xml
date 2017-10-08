@@ -11,6 +11,7 @@
 
 
     <ImageView
+        android:contentDescription="@string/logo_desc"
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,13 +23,13 @@
     <EditText
         android:id="@+id/emailText"
         android:layout_width="250dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:ems="10"
-        android:hint="Email Address"
+        android:hint="@string/email"
         android:textColor="#000000"
-        android:drawableLeft="@drawable/user"
+        android:drawableStart="@drawable/user"
         android:inputType="textEmailAddress"
          />
 
@@ -36,14 +37,14 @@
     <EditText
         android:id="@+id/passwordText"
         android:layout_width="250dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_below="@+id/emailText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="23dp"
         android:ems="10"
         android:textColor="#000000"
-        android:hint="Password"
-        android:drawableLeft="@drawable/password"
+        android:hint="@string/password"
+        android:drawableStart="@drawable/password"
         android:inputType="textPassword"
          />
 
@@ -51,9 +52,9 @@
         android:id="@+id/createText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Not A Member? Sign up now."
+        android:text="@string/create"
         android:textColor="#53606d"
-        android:textSize="13dp"
+        android:textSize="13sp"
         android:clickable="true"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
@@ -80,7 +81,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login"
+                android:text="@string/login"
                 android:textColor="#ffffff"
                 android:layout_centerInParent="true"/>
 
@@ -94,9 +95,9 @@
         android:layout_below="@+id/logIn"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:textSize="13dp"
+        android:textSize="13sp"
         android:clickable="true"
-        android:text="Forgot Password?" />
+        android:text="@string/forgot" />
 
 
 </RelativeLayout>
