@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wallpaper"
+    tools:context="com.example.harold.bustracker.MainActivity"
+    android:clickable="true"
+    android:focusableInTouchMode="true" >
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/logo"
+        android:layout_marginBottom="49dp"
+        android:layout_above="@+id/emailText"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/emailText"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:hint="Email Address"
+        android:textColor="#000000"
+        android:drawableLeft="@drawable/user"
+        android:inputType="textEmailAddress"
+         />
+
+
+    <EditText
+        android:id="@+id/passwordText"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/emailText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="23dp"
+        android:ems="10"
+        android:textColor="#000000"
+        android:hint="Password"
+        android:drawableLeft="@drawable/password"
+        android:inputType="textPassword"
+         />
+
+    <TextView
+        android:id="@+id/createText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Not A Member? Sign up now."
+        android:textColor="#53606d"
+        android:textSize="13dp"
+        android:clickable="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="17dp" />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        app:cardBackgroundColor="@android:color/holo_red_light"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="10dp"
+        android:layout_below="@+id/passwordText"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:id="@+id/logIn">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:textColor="#ffffff"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/forgot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logIn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textSize="13dp"
+        android:clickable="true"
+        android:text="Forgot Password?" />
+
+
+</RelativeLayout>
