@@ -12,5 +12,6 @@
     <string name="create_desc">Register Your Account</string>
     <string name="register">REGISTER</string>
     <string name="member">Already a Member? Sign in.</string>
-    <string name="logo_desc">logo</string>>
+    <string name="logo_desc">logo</string>
+    <string name="title_activity_maps">Map</string>>
 </resources>
