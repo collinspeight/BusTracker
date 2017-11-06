@@ -31,6 +31,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
+    private static final String TAG = "CreateAccountActivity";
+
     private FirebaseAuth mAuth;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
@@ -39,7 +41,6 @@ public class CreateAccountActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword1, inputPassword2;
     private TextView member;
     private CardView register;
-    private static final String TAG = "CreateAccountActivity";
     private String userID;
 
     @Override
