@@ -22,13 +22,25 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     private EditText inputEmail, inputPassword1, inputPassword2;
     private TextView member;
     private CardView register;
+    private static final String TAG = "CreateAccountActivity";
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +48,8 @@ public class CreateAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_account);
 
         mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
 
         inputEmail = (EditText) findViewById(R.id.emailText);
         inputPassword1 = (EditText) findViewById(R.id.password1Text);
@@ -81,8 +95,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
     private void createUser(){
@@ -91,12 +103,13 @@ public class CreateAccountActivity extends AppCompatActivity {
         String password2 = inputPassword2.getText().toString().trim();
 
 
+
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
         }
         if(!password1.equals(password2)) {
-            Toast.makeText(getApplicationContext(), "Password do not match!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -124,14 +137,38 @@ public class CreateAccountActivity extends AppCompatActivity {
                             Toast.makeText(CreateAccountActivity.this, "Registration failed." + task.getException(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            addDatabaseUser();
                             startActivity(new Intent(CreateAccountActivity.this, MainActivity.class));
                             finish();
                         }
                     }
                 });
+    }
 
+    private void addDatabaseUser() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        userID = user.getUid();
 
-        }
+        // Read from the database
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                Log.d(TAG, "onDataChange: Added information to database: \n" +
+                        dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+        myRef.child("Users").child(userID).child("Admin").setValue(false);
+    }
+
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
