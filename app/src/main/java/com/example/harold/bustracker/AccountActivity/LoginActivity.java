@@ -67,10 +67,6 @@ public class LoginActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
 
-        if (mAuth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        }
 
         // Create a listener to check if a user is logged in/logged out.
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -182,8 +178,6 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            // Change the class for Admin view
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             loginUserType();
                             finish();
                         }
