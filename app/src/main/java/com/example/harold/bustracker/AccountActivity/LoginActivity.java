@@ -24,15 +24,25 @@ import com.example.harold.bustracker.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LoginActivity";
+
     private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     private EditText inputEmail, inputPassword;
     private TextView createUser, forgot;
     private CardView loginBtn;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private static final String TAG = "LoginActivity";
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +60,10 @@ public class LoginActivity extends AppCompatActivity {
 
         // Get Firebase instance
         mAuth = FirebaseAuth.getInstance();
+
+        // Declare database reference object
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
 
         if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -78,7 +92,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 logIn();
             }
-
         });
 
         inputPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -110,7 +123,6 @@ public class LoginActivity extends AppCompatActivity {
         forgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
             }
         });
@@ -118,14 +130,11 @@ public class LoginActivity extends AppCompatActivity {
         createUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 startActivity(new Intent(LoginActivity.this, CreateAccountActivity.class));
             }
         });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-
     }
 
     public void hideKeyboard(View view) {
@@ -149,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(LoginActivity.this, "Logging in... ", Toast.LENGTH_LONG).show();
 
-        //authenticate user
+        // Authenticate user
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -160,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                         // signed in user can be handled in the listener.
 
                         if (!task.isSuccessful()) {
-                            // there was an error
+                            // There was an error
                             if (password.length() < 6) {
                                 Toast.makeText(LoginActivity.this, "Password too short, " +
                                                 "set a minimum of 6 characters",
@@ -171,18 +180,40 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            Toast.makeText(LoginActivity.this, "Log in success!! ",
-                                    Toast.LENGTH_LONG).show();
+                            loginUserType();
 
-                            //Change the class for main view
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
+                            // Change the class for main view
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         }
                     }
                 });
     }
 
+    private void loginUserType() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        userID = user.getUid();
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean isAdmin = (boolean)dataSnapshot.child("Users").child(userID).child("Admin").getValue();
+
+                if(isAdmin) { // Put administrator login actions here
+                    Toast.makeText(LoginActivity.this, "Administrator login successful!!",
+                            Toast.LENGTH_LONG).show();
+                } else { // Put administrator login actions here
+                    Toast.makeText(LoginActivity.this, "Standard login successful!!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     public void onStart() {
@@ -197,8 +228,4 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
-
-
-
 }
