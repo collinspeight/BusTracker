@@ -37,7 +37,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
         setupServiceReceiver();
 
         // Start service
-        Intent i = new Intent(this, BusInformationService.class);
+        final Intent i = new Intent(this, BusInformationService.class);
         i.putExtra("receiver", busInformationReceiver);
         startService(i);
 
@@ -51,7 +51,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                stopService(i);
                 mAuth.signOut();
                 startActivity(new Intent(Admin.this, LoginActivity.class));
                 finish();
