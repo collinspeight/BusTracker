@@ -18,9 +18,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".User" />
+        <activity android:name=".Admin" />
         <activity android:name=".AccountActivity.CreateAccountActivity" />
         <activity android:name=".AccountActivity.ResetPasswordActivity"></activity>
+        <uses-library android:name="com.google.android.maps" />
     </application>
 
 </manifest>
