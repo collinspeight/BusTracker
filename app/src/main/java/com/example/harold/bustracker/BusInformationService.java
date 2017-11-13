@@ -30,7 +30,7 @@ public class BusInformationService extends IntentService{
         double eta = 0;
 
         // Temp loop to illustrate real time updates
-        for (int i = 0; i < 10000; i++)
+        for (int i = 1; i < 10000; i++)
         {
             try
             {
@@ -56,10 +56,10 @@ public class BusInformationService extends IntentService{
             {
                 bundle.putDouble("lat1", lat);
                 bundle.putDouble("lng1", lng);
-                bundle.putDouble("lat2", lat++);
-                bundle.putDouble("lng2", lng++);
-                bundle.putDouble("lat3", lat--);
-                bundle.putDouble("lng3", lng--);
+                bundle.putDouble("lat2", lat+1);
+                bundle.putDouble("lng2", lng+1);
+                bundle.putDouble("lat3", lat+2);
+                bundle.putDouble("lng3", lng+2);
             }
             else
             {
