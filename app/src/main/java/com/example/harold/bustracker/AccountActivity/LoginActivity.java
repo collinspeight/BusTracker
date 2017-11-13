@@ -198,11 +198,13 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     // Change the class for Admin view
                     startActivity(new Intent(LoginActivity.this, Admin.class));
+                    finish();
                 } else { // Put user login actions here
                     Toast.makeText(LoginActivity.this, "Standard login successful!!",
                             Toast.LENGTH_LONG).show();
                     // Change the class for User view
-                    startActivity(new Intent(LoginActivity.this, User.class));
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
                 }
             }
 

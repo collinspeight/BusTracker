@@ -4,9 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.example.harold.bustracker.BusInformationReceiver;
@@ -19,26 +22,39 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class User extends AppCompatActivity implements OnMapReadyCallback{
 
     private BusInformationReceiver busInformationReceiver;
     private FirebaseAuth mAuth;
     private Button signOut;
     MapView mMapView;
-    private LatLng busStop;
+    private LatLng busStopLocation;
     private GoogleMap map;
+    private int busStopNumber;
+    private LatLng[] busStopsLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.user);
 
+        initializeBusStopsLocation();
+
+        // Get bus stop number and location
+        busStopNumber = getIntent().getIntExtra("BusStop", 0);
+        busStopLocation = busStopsLocation[busStopNumber];
+
         // Create service receiver
         setupServiceReceiver();
 
         // Start service
-        Intent i = new Intent(this, BusInformationService.class);
+        final Intent i = new Intent(this, BusInformationService.class);
         i.putExtra("receiver", busInformationReceiver);
+        i.putExtra("adminMode", false);
         startService(i);
 
         mMapView = findViewById(R.id.map);
@@ -51,7 +67,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                stopService(i);
                 mAuth.signOut();
                 startActivity(new Intent(User.this, LoginActivity.class));
                 finish();
@@ -71,6 +87,9 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
                     setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")));
+                    double eta = resultData.getDouble("ETA");
+                    TextView textViewToUpdate = (TextView) findViewById(R.id.textView3);
+                    textViewToUpdate.setText("Bus' ETA: " + eta);
                 }
             }
         });
@@ -105,21 +124,25 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        // TODO set the bus stop from intent sent from the main activity
-
-        // Temp bus stop of UCF's lat long until set from main activity
-        busStop = new LatLng(28.6024, -81.2000);
-        map.addMarker(new MarkerOptions().position(busStop).title("Selected Bus Stop"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(busStop));
+        // Create marker for bus stop
+        map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
+        map.moveCamera(CameraUpdateFactory.newLatLng(busStopLocation));
     }
     private void setBusInformation(LatLng latlng)
     {
-        // Clear previous markers from map
         map.clear();
-
-        // Generate marker for the bus stop and current location of closest bus
-        map.addMarker(new MarkerOptions().position(busStop).title("Selected Bus Stop"));
         map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+        map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
+    }
+
+    private void initializeBusStopsLocation()
+    {
+        // Hard coded bus stop locations map. Key: bus stop number, Value: location (lat, lng)
+        busStopsLocation = new LatLng[5];
+        busStopsLocation[0] = new LatLng(1,2);
+        busStopsLocation[1] = new LatLng(3,4);
+        busStopsLocation[2] = new LatLng(5,6);
+        busStopsLocation[3] = new LatLng(7,8);
+        busStopsLocation[4] = new LatLng(9,10);
     }
 }
