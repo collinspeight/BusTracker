@@ -121,9 +121,6 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
         map.clear();
 
         // Generate markers for all supported buses
-        //map.addMarker(new MarkerOptions().position(new LatLng(11,12)));
-        //map.addMarker(new MarkerOptions().position(new LatLng(13,14)));
-        //map.addMarker(new MarkerOptions().position(new LatLng(15,16)));
         map.addMarker(new MarkerOptions().position(new LatLng(
                 resultData.getDouble("lat1"),resultData.getDouble("lng1"))).title("Bus #1"));
         map.addMarker(new MarkerOptions().position(new LatLng(
@@ -133,7 +130,6 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
 
 
         // Generate markers for all supported bus stops
-        initializeBusStopsLocation();
         map.addMarker(new MarkerOptions().position(busStopsLocation[0]).title("Bus Stop #1234"));
         map.addMarker(new MarkerOptions().position(busStopsLocation[1]).title("Bus Stop #2345"));
         map.addMarker(new MarkerOptions().position(busStopsLocation[2]).title("Bus Stop #3456"));
