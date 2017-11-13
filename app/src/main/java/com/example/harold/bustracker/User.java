@@ -1,8 +1,11 @@
 package com.example.harold.bustracker;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.example.harold.bustracker.BusInformationReceiver;
@@ -95,6 +99,18 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         });
     }
 
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED)
+            {
+                map.setMyLocationEnabled(true);
+            }
+        }
+    }
+
     @Override
     protected void onDestroy(){
         super.onDestroy();
@@ -127,6 +143,10 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         // Create marker for bus stop
         map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
         map.moveCamera(CameraUpdateFactory.newLatLng(busStopLocation));
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                1);
     }
     private void setBusInformation(LatLng latlng)
     {
