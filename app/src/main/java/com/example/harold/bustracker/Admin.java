@@ -27,6 +27,8 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
     MapView mMapView;
     private LatLng busStop;
     private GoogleMap map;
+    private LatLng[] busStopsLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +41,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
         // Start service
         final Intent i = new Intent(this, BusInformationService.class);
         i.putExtra("receiver", busInformationReceiver);
+        i.putExtra("adminMode", true);
         startService(i);
 
         mMapView = findViewById(R.id.map);
@@ -70,7 +73,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
-                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")));
+                    setBusInformation(resultData);
                 }
             }
         });
@@ -112,14 +115,36 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
         map.addMarker(new MarkerOptions().position(busStop).title("Selected Bus Stop"));
         map.moveCamera(CameraUpdateFactory.newLatLng(busStop));
     }
-    private void setBusInformation(LatLng latlng)
+    private void setBusInformation(Bundle resultData)
     {
         // Clear previous markers from map
         map.clear();
 
-        // Generate marker for the bus stop and current location of closest bus
-        map.addMarker(new MarkerOptions().position(busStop).title("Selected Bus Stop"));
-        map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+        // Generate markers for all supported buses
+        map.addMarker(new MarkerOptions().position(new LatLng(
+                resultData.getDouble("lat1"),resultData.getDouble("lng1"))).title("Bus #1"));
+        map.addMarker(new MarkerOptions().position(new LatLng(
+                resultData.getDouble("lat2"),resultData.getDouble("lng2"))).title("Bus #2"));
+        map.addMarker(new MarkerOptions().position(new LatLng(
+                resultData.getDouble("lat3"),resultData.getDouble("lng3"))).title("Bus #3"));
+
+
+        // Generate markers for all supported bus stops
+        map.addMarker(new MarkerOptions().position(busStopsLocation[0]).title("Bus Stop #1234"));
+        map.addMarker(new MarkerOptions().position(busStopsLocation[1]).title("Bus Stop #2345"));
+        map.addMarker(new MarkerOptions().position(busStopsLocation[2]).title("Bus Stop #3456"));
+        map.addMarker(new MarkerOptions().position(busStopsLocation[3]).title("Bus Stop #4567"));
+        map.addMarker(new MarkerOptions().position(busStopsLocation[4]).title("Bus Stop #5678"));
+    }
+
+    private void initializeBusStopsLocation()
+    {
+        // Hard coded bus stop locations map. Key: bus stop number, Value: location (lat, lng)
+        busStopsLocation = new LatLng[5];
+        busStopsLocation[0] = new LatLng(1,2);
+        busStopsLocation[1] = new LatLng(3,4);
+        busStopsLocation[2] = new LatLng(5,6);
+        busStopsLocation[3] = new LatLng(7,8);
+        busStopsLocation[4] = new LatLng(9,10);
     }
 }

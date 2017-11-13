@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
-
-    private FirebaseAuth mAuth;
-    private Button signOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,25 +19,55 @@ public class MainActivity extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
-        mAuth = FirebaseAuth.getInstance();
+        Button busStop1 = (Button) findViewById(R.id.button1);
+        Button busStop2 = (Button) findViewById(R.id.button2);
+        Button busStop3 = (Button) findViewById(R.id.button3);
+        Button busStop4 = (Button) findViewById(R.id.button4);
+        Button busStop5 = (Button) findViewById(R.id.button5);
 
-        signOut = (Button) findViewById(R.id.logOut);
-
-        signOut.setOnClickListener(new View.OnClickListener() {
+        busStop1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                mAuth.signOut();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                finish();
+                Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 0);
+                startActivity(i);
             }
         });
 
+        busStop2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 1);
+                startActivity(i);
+            }
+        });
 
+        busStop3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 2);
+                startActivity(i);
+            }
+        });
 
+        busStop4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 3);
+                startActivity(i);
+            }
+        });
 
-
+        busStop5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 4);
+                startActivity(i);
+            }
+        });
     }
-
-
 }
