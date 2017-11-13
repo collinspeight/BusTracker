@@ -128,7 +128,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback{
         map.addMarker(new MarkerOptions().position(new LatLng(
                 resultData.getDouble("lat3"),resultData.getDouble("lng3"))).title("Bus #3"));
 
-
+        initializeBusStopsLocation();
         // Generate markers for all supported bus stops
         map.addMarker(new MarkerOptions().position(busStopsLocation[0]).title("Bus Stop #1234"));
         map.addMarker(new MarkerOptions().position(busStopsLocation[1]).title("Bus Stop #2345"));
