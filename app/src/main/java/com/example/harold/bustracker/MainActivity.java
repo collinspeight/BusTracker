@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 0);
+                i.putExtra("RouteNumber", 423);
                 startActivity(i);
             }
         });
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 1);
+                i.putExtra("RouteNumber", 424);
                 startActivity(i);
             }
         });
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 2);
+                i.putExtra("RouteNumber", 423);
                 startActivity(i);
             }
         });
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 3);
+                i.putExtra("RouteNumber", 423);
                 startActivity(i);
             }
         });
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 4);
+                i.putExtra("RouteNumber", 423);
                 startActivity(i);
             }
         });
