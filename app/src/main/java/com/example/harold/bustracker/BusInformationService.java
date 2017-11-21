@@ -28,7 +28,8 @@ public class BusInformationService extends IntentService{
         double lat = 0;
         double lng = 0;
         double eta = 0;
-
+        //TODO Remove this variable
+        double inc = 0;
         // Temp loop to illustrate real time updates
         for (int i = 0; i < 10000; i++)
         {
@@ -44,8 +45,10 @@ public class BusInformationService extends IntentService{
             }
 
             //TODO Obtain lat and lng values from Lynx API
-            lat = i;
-            lng = i;
+            //TODO Remove inc (dumby variable to increment bus location)
+            inc = (double)i / 1000;
+            lat = 28.527502+inc;
+            lng = -81.388834+inc;
             eta = i;
 
             // Test for admin vs standard mode. If admin mode create 3 marks. If standard create one.

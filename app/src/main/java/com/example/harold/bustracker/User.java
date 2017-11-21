@@ -22,6 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -49,7 +50,9 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
     private LatLng[] busStopsLocation;
     private int[] stops;
     private boolean debug = false;
-
+    //Saves the marker position so it can be removed
+    private Marker bus;
+    private Marker stop;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,9 +228,6 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-
-        map.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-
         // Create marker for bus stop
        //map.addMarker(new MarkerOptions().position(new LatLng(28.5477008,-81.3902763)).title("Selected Bus Stop"));
 
@@ -236,8 +236,9 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.5477008,-81.3902763)));
-        map.animateCamera(CameraUpdateFactory.zoomTo(14.0f));
+        //Updated map starting position and zoom
+        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.527502,-81.388834)));
+        map.animateCamera(CameraUpdateFactory.zoomTo(13f));
 
 
     }
@@ -274,9 +275,13 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
 
     private void setBusInformation(LatLng latlng)
     {
-        //map.clear();
-        map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
-        map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
+        //If marker has already been placed. Remove it.
+        if(bus!= null)
+            bus.remove();
+        if(stop!= null)
+            stop.remove();
+        bus = map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
+        stop = map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
     }
 
     private void initializeBusStopsLocation()
