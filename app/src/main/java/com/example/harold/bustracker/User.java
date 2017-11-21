@@ -1,15 +1,16 @@
 package com.example.harold.bustracker;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Pair;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.example.harold.bustracker.BusInformationReceiver;
@@ -18,12 +19,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class User extends AppCompatActivity implements OnMapReadyCallback{
 
@@ -33,8 +45,10 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
     MapView mMapView;
     private LatLng busStopLocation;
     private GoogleMap map;
-    private int busStopNumber;
+    private int busStopNumber, routeNumber;
     private LatLng[] busStopsLocation;
+    private int[] stops;
+    private boolean debug = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +62,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         busStopNumber = getIntent().getIntExtra("BusStop", 0);
         busStopLocation = busStopsLocation[busStopNumber];
 
+        routeNumber = getIntent().getIntExtra("RouteNumber", 0);
         // Create service receiver
         setupServiceReceiver();
 
@@ -73,6 +88,93 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
                 finish();
             }
         });
+    }
+
+
+    private void setBusStops() throws JSONException {
+        JSONArray routeArray = getJSONFromRaw(0);
+        JSONArray stopsArray = getJSONFromRaw(1);
+        JSONObject temp, routeObj;
+        String color;
+        ArrayList<LatLng> path = new ArrayList<>();
+        ArrayList<Integer> stops = new ArrayList<>();
+        int length;
+
+        // Get route information
+        length = routeArray.length();
+        for(int i = 0; i < length; i++) {
+            temp = routeArray.getJSONObject(i);
+
+
+            if (temp.optInt("id") == routeNumber){
+                if(debug) {
+                    System.out.println(temp);
+                }
+                routeObj = temp;
+                JSONArray tempArray;
+
+                // Get path of the route
+                tempArray = routeObj.optJSONArray("path");
+                length = tempArray.length();
+
+                if (tempArray != null) {
+                    for (i = 0; i < length; i += 2) {
+                        path.add(new LatLng(tempArray.getDouble(i), tempArray.getDouble(i + 1)));
+                    }
+                }
+
+                if(debug) {
+                    System.out.println(path);
+                }
+
+
+                // Get stops of the route
+                tempArray = routeObj.optJSONArray("stops");
+                length = tempArray.length();
+
+                if (tempArray != null) {
+                    for (i = 0; i < length; i += 2) {
+                        stops.add(Integer.valueOf(tempArray.getInt(i)));
+                    }
+                }
+
+                if(debug) {
+                    System.out.println(stops);
+                }
+
+
+                // Adding Path
+                color = routeObj.getString("color");
+                drawRoute(path, color);
+
+                break;
+            }
+
+
+        }
+        // Adding stop markers
+        length = stopsArray.length();
+        for(int i = 0; i < length; i++) {
+            temp = stopsArray.getJSONObject(i);
+
+            if (stops.contains(temp.optInt("id"))) {
+                if(debug) {
+                    System.out.println(temp.getString("name"));
+                    System.out.println(new LatLng(temp.getDouble("lat"), temp.getDouble("lon")));
+                }
+
+                setStopAndInfo(new LatLng(temp.getDouble("lat"), temp.getDouble("lon")),
+                                temp.getString("name"),
+                                temp.getString("code"));
+
+            }
+
+        }
+
+
+
+
+
     }
 
     /**
@@ -124,13 +226,55 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
+        map.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+
         // Create marker for bus stop
-        map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(busStopLocation));
+       //map.addMarker(new MarkerOptions().position(new LatLng(28.5477008,-81.3902763)).title("Selected Bus Stop"));
+
+        try {
+            setBusStops();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.5477008,-81.3902763)));
+        map.animateCamera(CameraUpdateFactory.zoomTo(14.0f));
+
+
     }
+
+    private void setStopAndInfo (LatLng latlng, String name, String code) {
+
+        if(debug) {
+            System.out.println(latlng);
+            System.out.println(name + code);
+        }
+
+        map.addMarker(new MarkerOptions()
+                .position(latlng)
+                .title(name)
+                .snippet("stop code:" + code)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_icon)));
+
+    }
+
+    private void drawRoute(ArrayList<LatLng> path, String color) {
+        int hexColor = Integer.decode("0x7f" + color);
+        PolylineOptions rectOptions = new PolylineOptions()
+                                        .color(hexColor)
+                                        .jointType(JointType.ROUND)
+                                        .width(15.0f);
+
+        rectOptions.addAll(path);
+
+        map.addPolyline(rectOptions);
+
+
+
+    }
+
     private void setBusInformation(LatLng latlng)
     {
-        map.clear();
+        //map.clear();
         map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
         map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
     }
@@ -144,5 +288,46 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         busStopsLocation[2] = new LatLng(5,6);
         busStopsLocation[3] = new LatLng(7,8);
         busStopsLocation[4] = new LatLng(9,10);
+    }
+
+    // Parsing JSON from raw assets
+    // 0  = routes
+    // 1  = stops
+    private JSONArray getJSONFromRaw (int toggle) {
+
+        String forecastJsonStr;
+        InputStream inputStream;
+        JSONArray jsonArray = null;
+
+        try {
+
+            Resources res = getResources();
+
+            // Read the input stream into a String
+            if ( toggle == 0) {
+                inputStream = res.openRawResource(R.raw.routes);
+            } else {
+                inputStream = res.openRawResource(R.raw.stops);
+            }
+
+            Scanner scanner = new Scanner(inputStream);
+
+            StringBuilder builder = new StringBuilder();
+
+            while(scanner.hasNextLine()) {
+                builder.append(scanner.nextLine());
+            }
+
+            forecastJsonStr = builder.toString();
+            jsonArray = new JSONArray(forecastJsonStr);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            return jsonArray;
+        }
+
+
     }
 }
