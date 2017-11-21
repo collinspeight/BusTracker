@@ -28,4 +28,13 @@
         android:layout_marginTop="91dp"
         android:text="Map thingy mabob and a buncha things" />
 
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="89dp"
+        android:text="jkashdfj" />
+
 </RelativeLayout>
