@@ -20,6 +20,8 @@ import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 
 import com.example.harold.bustracker.MainActivity;
+import com.example.harold.bustracker.User;
+import com.example.harold.bustracker.Admin;
 import com.example.harold.bustracker.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -65,10 +67,6 @@ public class LoginActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
 
-        if (mAuth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        }
 
         // Create a listener to check if a user is logged in/logged out.
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -181,10 +179,6 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             loginUserType();
-
-                            // Change the class for main view
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
                         }
                     }
                 });
@@ -202,9 +196,15 @@ public class LoginActivity extends AppCompatActivity {
                 if(isAdmin) { // Put administrator login actions here
                     Toast.makeText(LoginActivity.this, "Administrator login successful!!",
                             Toast.LENGTH_LONG).show();
-                } else { // Put administrator login actions here
+                    // Change the class for Admin view
+                    startActivity(new Intent(LoginActivity.this, Admin.class));
+                    finish();
+                } else { // Put user login actions here
                     Toast.makeText(LoginActivity.this, "Standard login successful!!",
                             Toast.LENGTH_LONG).show();
+                    // Change the class for User view
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
                 }
             }
 
