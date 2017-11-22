@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 1);
-                i.putExtra("RouteNumber", 424);
+                i.putExtra("RouteNumber", 414);
                 startActivity(i);
             }
         });
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("BusStop", 2);
-                i.putExtra("RouteNumber", 423);
+                i.putExtra("RouteNumber", 434);
                 startActivity(i);
             }
         });

@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.harold.bustracker">
 
-
-    <user-permission android:name="android.permission.INTERNET"></user-permission>
+    <user-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -19,20 +18,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <activity android:name=".MainActivity" />
         <activity android:name=".User" />
         <activity android:name=".Admin" />
         <activity android:name=".AccountActivity.CreateAccountActivity" />
-        <activity android:name=".AccountActivity.ResetPasswordActivity"></activity>
+        <activity android:name=".AccountActivity.ResetPasswordActivity" />
+
         <service
             android:name=".BusInformationService"
-            android:exported="true"/>
+            android:exported="true" />
 
         <uses-library android:name="com.google.android.maps" />
 
+        <activity
+            android:name=".BusETA"
+            android:label="@string/title_activity_bus_et"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

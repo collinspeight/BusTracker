@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.example.harold.bustracker.BusInformationReceiver;
@@ -38,7 +39,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class User extends AppCompatActivity implements OnMapReadyCallback{
+public class User extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private BusInformationReceiver busInformationReceiver;
     private FirebaseAuth mAuth;
@@ -53,6 +54,8 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
     //Saves the marker position so it can be removed
     private Marker bus;
     private Marker stop;
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,10 +73,11 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         setupServiceReceiver();
 
         // Start service
-        final Intent i = new Intent(this, BusInformationService.class);
-        i.putExtra("receiver", busInformationReceiver);
-        i.putExtra("adminMode", false);
-        startService(i);
+        intent = new Intent(this, BusInformationService.class);
+        intent.putExtra("receiver", busInformationReceiver);
+        intent.putExtra("adminMode", false);
+        intent.putExtra("routeNumber", routeNumber);
+        startService(intent);
 
         mMapView = findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
@@ -85,7 +89,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(i);
+                stopService(intent);
                 mAuth.signOut();
                 startActivity(new Intent(User.this, LoginActivity.class));
                 finish();
@@ -93,6 +97,80 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         });
     }
 
+
+    /**
+     * Creates a service receiver that will be notified of results of the BusInformationService
+     * once the service receiver subscribes to the service.
+     */
+    public void setupServiceReceiver() {
+        busInformationReceiver = new BusInformationReceiver(new Handler());
+        // This is where we specify what happens when data is received from the service
+        busInformationReceiver.setReceiver(new BusInformationReceiver.Receiver() {
+            @Override
+            public void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == RESULT_OK) {
+                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")));
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        stopService(intent);
+        mMapView.onDestroy();
+    }
+    @Override
+    public void onLowMemory(){
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        stopService(intent);
+        mMapView.onPause();
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        mMapView.onResume();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        map.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+
+        // Create marker for bus stop
+        try {
+            setBusStops();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.5477008,-81.3902763)));
+        map.animateCamera(CameraUpdateFactory.zoomTo(14.0f));
+        map.setOnMarkerClickListener(this);
+
+
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        //Toast.makeText(getApplicationContext(), marker.getTag().toString(), Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(User.this, BusETA.class);
+        i.putExtra("StopID", marker.getTag().toString());
+        stopService(intent);
+        startActivity(i);
+        return false;
+    }
 
     private void setBusStops() throws JSONException {
         JSONArray routeArray = getJSONFromRaw(0);
@@ -167,94 +245,30 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
                 }
 
                 setStopAndInfo(new LatLng(temp.getDouble("lat"), temp.getDouble("lon")),
-                                temp.getString("name"),
-                                temp.getString("code"));
+                        temp.getString("name"),
+                        temp.getString("code"),
+                        temp.getInt("id"));
 
             }
 
         }
 
-
-
-
-
     }
 
-    /**
-     * Creates a service receiver that will be notified of results of the BusInformationService
-     * once the service receiver subscribes to the service.
-     */
-    public void setupServiceReceiver() {
-        busInformationReceiver = new BusInformationReceiver(new Handler());
-        // This is where we specify what happens when data is received from the service
-        busInformationReceiver.setReceiver(new BusInformationReceiver.Receiver() {
-            @Override
-            public void onReceiveResult(int resultCode, Bundle resultData) {
-                if (resultCode == RESULT_OK) {
-                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")));
-                    double eta = resultData.getDouble("ETA");
-                    TextView textViewToUpdate = (TextView) findViewById(R.id.textView3);
-                    textViewToUpdate.setText("Bus' ETA: " + eta);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        mMapView.onDestroy();
-    }
-    @Override
-    public void onLowMemory(){
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
-    @Override
-    protected void onPause(){
-        super.onPause();
-        mMapView.onPause();
-    }
-    @Override
-    protected void onResume(){
-        super.onResume();
-        mMapView.onResume();
-    }
-    @Override
-    protected void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-        mMapView.onSaveInstanceState(outState);
-    }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        // Create marker for bus stop
-       //map.addMarker(new MarkerOptions().position(new LatLng(28.5477008,-81.3902763)).title("Selected Bus Stop"));
-
-        try {
-            setBusStops();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        //Updated map starting position and zoom
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.527502,-81.388834)));
-        map.animateCamera(CameraUpdateFactory.zoomTo(13f));
-
-
-    }
-
-    private void setStopAndInfo (LatLng latlng, String name, String code) {
+    private void setStopAndInfo (LatLng latlng, String name, String code, int id) {
 
         if(debug) {
             System.out.println(latlng);
             System.out.println(name + code);
         }
 
-        map.addMarker(new MarkerOptions()
+        Marker marker = map.addMarker(new MarkerOptions()
                 .position(latlng)
                 .title(name)
                 .snippet("stop code:" + code)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_icon)));
+
+        marker.setTag(id);
 
     }
 
