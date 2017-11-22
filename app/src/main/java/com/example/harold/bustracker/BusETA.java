@@ -67,9 +67,12 @@ public class BusETA extends AppCompatActivity {
 
         String stopID = getIntent().getStringExtra("StopID");
         String name = getIntent().getStringExtra("Name");
+        String stopCode = getIntent().getStringExtra("StopCode");
 
         TextView nameTextView = (TextView) findViewById(R.id.textView_address);
         nameTextView.setText(name);
+        TextView stopTextView = (TextView) findViewById(R.id.stop_code);
+        stopTextView.setText(stopCode);
 
         setupServiceReceiver();
 
@@ -93,18 +96,18 @@ public class BusETA extends AppCompatActivity {
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
-//                    routes =resultData.getIntegerArrayList("routes");
-//                    colors = resultData.getStringArrayList("colors");
-//                    arrivals = resultData.getIntegerArrayList("arrivals");
-                    routes.add(434);
-                    routes.add(414);
-                    routes.add(424);
-                    colors.add("00A884");
-                    colors.add("00A884");
-                    colors.add("00A884");
-                    arrivals.add(0);
-                    arrivals.add(1);
-                    arrivals.add(3);
+                    routes =resultData.getIntegerArrayList("routes");
+                    colors = resultData.getStringArrayList("colors");
+                    arrivals = resultData.getIntegerArrayList("arrivals");
+//                    routes.add(434);
+//                    routes.add(414);
+//                    routes.add(424);
+//                    colors.add("00A884");
+//                    colors.add("00A884");
+//                    colors.add("00A884");
+//                    arrivals.add(0);
+//                    arrivals.add(1);
+//                    arrivals.add(3);
                     populateListView();
                 }
             }

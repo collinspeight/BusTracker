@@ -1,8 +1,11 @@
 package com.example.harold.bustracker;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -13,12 +16,21 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Choose A Bus Route");
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setSubtitleTextColor(Color.WHITE);
+
+        FloatingActionButton signOut = (FloatingActionButton) findViewById(R.id.fab_signout);
         Button busStop1 = (Button) findViewById(R.id.button1);
         Button busStop2 = (Button) findViewById(R.id.button2);
         Button busStop3 = (Button) findViewById(R.id.button3);
@@ -72,6 +84,18 @@ public class MainActivity extends AppCompatActivity {
                 i.putExtra("BusStop", 4);
                 i.putExtra("RouteNumber", 423);
                 startActivity(i);
+            }
+        });
+
+        mAuth = FirebaseAuth.getInstance();
+
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
             }
         });
     }
