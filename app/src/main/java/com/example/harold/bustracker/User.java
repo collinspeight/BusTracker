@@ -5,10 +5,13 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -99,7 +102,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
-                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")));
+                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")), resultData.getString("name"));
                 }
             }
         });
@@ -148,7 +151,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
 
 
         map.moveCamera(CameraUpdateFactory.newLatLng(path.get(path.size()/2)));
-        map.animateCamera(CameraUpdateFactory.zoomTo(12f));
+        map.animateCamera(CameraUpdateFactory.zoomTo(12.5f));
         map.setOnMarkerClickListener(this);
 
 
@@ -156,6 +159,10 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
+
+        if (marker == bus){
+            return true;
+        }
 
         //Toast.makeText(getApplicationContext(), marker.getTag().toString(), Toast.LENGTH_SHORT).show();
         Intent i = new Intent(User.this, BusETA.class);
@@ -172,7 +179,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         JSONArray stopsArray = getJSONFromRaw(1);
         JSONObject temp, routeObj;
         String color;
-         path = new ArrayList<>();
+        path = new ArrayList<>();
         ArrayList<Integer> stops = new ArrayList<>();
         int length;
 
@@ -282,16 +289,67 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     }
 
-    private void setBusInformation(LatLng latlng)
+    private void setBusInformation(LatLng latlng, String name)
     {
         //If marker has already been placed. Remove it.
         if(bus!= null)
-            bus.remove();
+            animateBusMarker(name, bus.getPosition(),latlng, false);
+        else {
+            bus = map.addMarker(new MarkerOptions().position(latlng).title("Bus: " + name));
+        }
         if(stop!= null)
             stop.remove();
-        bus = map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
+
         stop = map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
     }
+
+
+    // For Admin mode, change the parameters to accept the bus marker so that
+    // specific marker would change instead of just one marker.
+    // TODO Might need to edit this method for multiple bus or just do the regular
+    public void animateBusMarker(final String name, final LatLng startPosition, final LatLng toPosition,
+                              final boolean hideMarker) {
+
+        bus.remove();
+
+        bus = map.addMarker(new MarkerOptions()
+                .position(startPosition)
+                .title("Bus: " + name));
+
+
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+
+        final long duration = 10000;
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * toPosition.longitude + (1 - t)
+                        * startPosition.longitude;
+                double lat = t * toPosition.latitude + (1 - t)
+                        * startPosition.latitude;
+
+                bus.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        bus.setVisible(false);
+                    } else {
+                        bus.setVisible(true);
+                    }
+                }
+            }
+        });
+    }
+
 
     private void initializeBusStopsLocation()
     {
