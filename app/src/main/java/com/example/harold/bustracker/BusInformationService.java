@@ -69,6 +69,7 @@ public class BusInformationService extends IntentService{
                         lat = temp.optDouble("lat");
                         lng = temp.optDouble("lon");
 
+                        System.out.println("Updating Bus Location...");
                         System.out.println(lat);
                         System.out.println(lng);
                         break;
@@ -108,7 +109,7 @@ public class BusInformationService extends IntentService{
             {
                 synchronized (this)
                 {
-                    wait(9000);
+                    wait(10000);
                 }
             }
             catch (InterruptedException e)
