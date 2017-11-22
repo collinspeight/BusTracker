@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\Sean\Documents\GitHub\POOP_PROJECT\Clones-POOP_PROJECT.iml" filepath="C:\Users\Sean\Documents\GitHub\POOP_PROJECT\Clones-POOP_PROJECT.iml" />
       <module fileurl="file://$PROJECT_DIR$/POOP_PROJECT.iml" filepath="$PROJECT_DIR$/POOP_PROJECT.iml" />
-      <module fileurl="file://C:\Users\Sean\Documents\GitHub\POOP_PROJECT\app\POOP_PROJECT-app.iml" filepath="C:\Users\Sean\Documents\GitHub\POOP_PROJECT\app\POOP_PROJECT-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

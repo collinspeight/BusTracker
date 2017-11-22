@@ -197,7 +197,14 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Administrator login successful!!",
                             Toast.LENGTH_LONG).show();
                     // Change the class for Admin view
-                    startActivity(new Intent(LoginActivity.this, Admin.class));
+                    Intent i = new Intent(LoginActivity.this, Admin.class);
+                    i.putExtra("BusStop", 0);
+                    i.putExtra("RouteNumber", 567);
+                    i.putExtra("RouteNumber2", 424);
+                    i.putExtra("RouteNumber3", 434);
+                    i.putExtra("RouteNumber4", 423);
+                    i.putExtra("RouteNumber5", 425);
+                    startActivity(i);
                     finish();
                 } else { // Put user login actions here
                     Toast.makeText(LoginActivity.this, "Standard login successful!!",

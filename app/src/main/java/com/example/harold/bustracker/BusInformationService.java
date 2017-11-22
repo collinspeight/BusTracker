@@ -4,8 +4,21 @@ package com.example.harold.bustracker;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Scanner;
 
 public class BusInformationService extends IntentService{
 
@@ -20,33 +33,61 @@ public class BusInformationService extends IntentService{
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopSelf();
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
         // Extract the receiver passed into the service
         ResultReceiver rec = intent.getParcelableExtra("receiver");
         boolean adminMode = intent.getBooleanExtra("adminMode", false);
+        int routeNumber = intent.getIntExtra("routeNumber", 0);
+        JSONArray busLoc;
+        JSONObject temp;
 
         double lat = 0;
         double lng = 0;
         double eta = 0;
-
+        //TODO Remove this variable
+        double inc = 0;
         // Temp loop to illustrate real time updates
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 100; i++)
         {
             try
             {
                 synchronized (this)
                 {
-                    wait(1000);
+                    wait(5000);
                 }
             }
             catch (InterruptedException e)
             {
             }
 
-            //TODO Obtain lat and lng values from Lynx API
-            lat = i;
-            lng = i;
-            eta = i;
+            // Getting data from Lynx/DoubleMap API
+            try {
+                busLoc = getJSONFromURL("http://golynx.doublemap.com/map/v2/buses");
+                // System.out.println(busLoc);
+                for (int j = 0; j < busLoc.length(); j++) {
+                    temp = busLoc.getJSONObject(j);
+
+                    if(temp.optInt("route") == routeNumber){
+                        lat = temp.optDouble("lat");
+                        lng = temp.optDouble("lon");
+
+                        System.out.println(lat);
+                        System.out.println(lng);
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
             // Test for admin vs standard mode. If admin mode create 3 marks. If standard create one.
             // This section will be removed and replaced with logic to get all the supported buses
@@ -70,6 +111,50 @@ public class BusInformationService extends IntentService{
 
             rec.send(Activity.RESULT_OK, bundle);
         }
+    }
+
+    private JSONArray getJSONFromURL (String reqURL) throws IOException {
+
+        String forecastJsonStr;
+        InputStream inputStream;
+        JSONArray jsonArray = null;
+
+        try {
+
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            //conn.connect();
+
+
+            // Read the input stream into a String
+
+            inputStream = new BufferedInputStream(conn.getInputStream());
+
+
+            Scanner scanner = new Scanner(inputStream);
+
+            StringBuilder builder = new StringBuilder();
+
+            while(scanner.hasNextLine()) {
+                builder.append(scanner.nextLine());
+            }
+
+            forecastJsonStr = builder.toString();
+            jsonArray = new JSONArray(forecastJsonStr);
+            inputStream.close();
+            builder.delete(0,builder.length());
+            conn.disconnect();
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+
+            return jsonArray;
+        }
+
+
     }
 
 }
