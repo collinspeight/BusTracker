@@ -52,4 +52,12 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/stop_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView11"
+        android:layout_centerHorizontal="true"
+        android:text="TextView" />
+
 </RelativeLayout>

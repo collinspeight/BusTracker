@@ -84,19 +84,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         mMapView = findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
-        mAuth = FirebaseAuth.getInstance();
 
-        signOut = findViewById(R.id.logOut);
-
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopService(intent);
-                mAuth.signOut();
-                startActivity(new Intent(User.this, LoginActivity.class));
-                finish();
-            }
-        });
     }
 
 
@@ -173,9 +161,10 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         Intent i = new Intent(User.this, BusETA.class);
         i.putExtra("StopID", marker.getTag().toString());
         i.putExtra("Name", marker.getTitle());
+        i.putExtra("StopCode", marker.getSnippet());
         stopService(intent);
         startActivity(i);
-        return false;
+        return true;
     }
 
     private void setBusStops() throws JSONException {
@@ -271,7 +260,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         Marker marker = map.addMarker(new MarkerOptions()
                 .position(latlng)
                 .title(name)
-                .snippet("stop code:" + code)
+                .snippet("Stop Code: " + code)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_icon)));
 
         marker.setTag(id);
