@@ -33,6 +33,10 @@
             android:name=".BusInformationService"
             android:exported="true" />
 
+        <service
+            android:name=".ETAInformationService"
+            android:exported="true" />
+
         <uses-library android:name="com.google.android.maps" />
 
         <activity

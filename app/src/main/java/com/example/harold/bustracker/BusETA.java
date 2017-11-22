@@ -1,7 +1,9 @@
 package com.example.harold.bustracker;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,22 +16,31 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BusETA extends AppCompatActivity {
 
-    int [] routes = {434,414, 424};
-    String [] colors = {"00A884", "0DA884", "0FA884"};
-    int [] arrivals = {0, 0, 0};
+
+    ArrayList<Integer> routes =  new ArrayList<>();
+    ArrayList<String> colors =  new ArrayList<>();
+    ArrayList<Integer> arrivals =  new ArrayList<>();
+    private ETAInformationReceiver etaInformationReceiver;
 
 
     @Override
@@ -55,22 +66,53 @@ public class BusETA extends AppCompatActivity {
         });
 
         String stopID = getIntent().getStringExtra("StopID");
+        String name = getIntent().getStringExtra("Name");
 
-        try {
-            etaArray = getJSONFromURL("http://golynx.doublemap.com/map/v2/eta?stop=" + stopID);
+        TextView nameTextView = (TextView) findViewById(R.id.textView_address);
+        nameTextView.setText(name);
 
-            //JSONObject ETAs = etaArray.getJSONObject(0);
+        setupServiceReceiver();
 
-            System.out.println(etaArray);
+        // Start service
+        Intent intent = new Intent(this, ETAInformationService.class);
+        intent.putExtra("receiver", etaInformationReceiver);
+        intent.putExtra("stopID", stopID);
+        startService(intent);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        populateListView();
+    }
+
+    /**
+     * Creates a service receiver that will be notified of results of the BusInformationService
+     * once the service receiver subscribes to the service.
+     */
+    public void setupServiceReceiver() {
+        etaInformationReceiver = new ETAInformationReceiver(new Handler());
+        // This is where we specify what happens when data is received from the service
+        etaInformationReceiver.setReceiver(new ETAInformationReceiver.Receiver() {
+            @Override
+            public void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == RESULT_OK) {
+//                    routes =resultData.getIntegerArrayList("routes");
+//                    colors = resultData.getStringArrayList("colors");
+//                    arrivals = resultData.getIntegerArrayList("arrivals");
+                    routes.add(434);
+                    routes.add(414);
+                    routes.add(424);
+                    colors.add("00A884");
+                    colors.add("00A884");
+                    colors.add("00A884");
+                    arrivals.add(0);
+                    arrivals.add(1);
+                    arrivals.add(3);
+                    populateListView();
+                }
+            }
+        });
     }
 
     private void populateListView() {
+
 
         CustomAdapter customAdapter = new CustomAdapter();
 
@@ -82,7 +124,7 @@ public class BusETA extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return routes.length;
+            return routes.size();
         }
 
         @Override
@@ -104,9 +146,13 @@ public class BusETA extends AppCompatActivity {
             TextView route = (TextView) view.findViewById(R.id.textview_route);
             TextView arrival = (TextView) view.findViewById(R.id.textview_arrival);
 
-            imageView.setColorFilter(Integer.decode("0x7f" + colors[i]));
-            route.setText(String.valueOf(routes[i]));
-            arrival.setText(String.valueOf(arrivals[i] - 1) + "-" + String.valueOf(arrivals[i]) + " minutes");
+            imageView.setColorFilter(Integer.decode("0x7f" + colors.get(i)));
+            route.setText(String.valueOf(routes.get(i)));
+            if(arrivals.get(i) > 1){
+                arrival.setText(String.valueOf(arrivals.get(i) - 1) + "-" + String.valueOf(arrivals.get(i)) + " minutes");
+            } else {
+                arrival.setText("Arriving soon");
+            }
 
             return view;
         }
@@ -118,48 +164,6 @@ public class BusETA extends AppCompatActivity {
         return true;
     }
 
-    private JSONArray getJSONFromURL (String reqURL) throws IOException {
 
-        String forecastJsonStr;
-        InputStream inputStream;
-        JSONArray jsonArray = null;
-
-        try {
-
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            //conn.connect();
-
-            System.out.println(url);
-            // Read the input stream into a String
-
-            inputStream = new BufferedInputStream(conn.getInputStream());
-
-            System.out.println("IS:" + inputStream);
-
-            Scanner scanner = new Scanner(inputStream);
-
-            StringBuilder builder = new StringBuilder();
-
-            while(scanner.hasNextLine()) {
-                builder.append(scanner.nextLine());
-            }
-
-            forecastJsonStr = builder.toString();
-            System.out.println("JSON"+ forecastJsonStr);
-            jsonArray = new JSONArray(forecastJsonStr);
-            conn.disconnect();
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
-
-            return jsonArray;
-        }
-
-
-    }
 
 }

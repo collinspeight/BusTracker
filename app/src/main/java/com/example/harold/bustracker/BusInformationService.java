@@ -32,6 +32,11 @@ public class BusInformationService extends IntentService{
         super.onCreate(); // if you override onCreate(), make sure to call super().
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopSelf();
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -48,7 +53,7 @@ public class BusInformationService extends IntentService{
         //TODO Remove this variable
         double inc = 0;
         // Temp loop to illustrate real time updates
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 100; i++)
         {
             try
             {
@@ -119,7 +124,7 @@ public class BusInformationService extends IntentService{
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.connect();
+            //conn.connect();
 
 
             // Read the input stream into a String
@@ -137,6 +142,8 @@ public class BusInformationService extends IntentService{
 
             forecastJsonStr = builder.toString();
             jsonArray = new JSONArray(forecastJsonStr);
+            inputStream.close();
+            builder.delete(0,builder.length());
             conn.disconnect();
 
 

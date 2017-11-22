@@ -23,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -49,6 +50,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     private GoogleMap map;
     private int busStopNumber, routeNumber;
     private LatLng[] busStopsLocation;
+    ArrayList<LatLng> path;
     private int[] stops;
     private boolean debug = false;
     //Saves the marker position so it can be removed
@@ -154,8 +156,11 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.5477008,-81.3902763)));
-        map.animateCamera(CameraUpdateFactory.zoomTo(14.0f));
+
+
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(path.get(path.size()/2)));
+        map.animateCamera(CameraUpdateFactory.zoomTo(12f));
         map.setOnMarkerClickListener(this);
 
 
@@ -167,6 +172,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         //Toast.makeText(getApplicationContext(), marker.getTag().toString(), Toast.LENGTH_SHORT).show();
         Intent i = new Intent(User.this, BusETA.class);
         i.putExtra("StopID", marker.getTag().toString());
+        i.putExtra("Name", marker.getTitle());
         stopService(intent);
         startActivity(i);
         return false;
@@ -177,7 +183,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         JSONArray stopsArray = getJSONFromRaw(1);
         JSONObject temp, routeObj;
         String color;
-        ArrayList<LatLng> path = new ArrayList<>();
+         path = new ArrayList<>();
         ArrayList<Integer> stops = new ArrayList<>();
         int length;
 

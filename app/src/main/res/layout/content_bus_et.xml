@@ -19,14 +19,22 @@
         android:contentDescription="@string/stop_logo"
         android:src="@drawable/bus_stop" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imageView11"
+        android:layout_marginTop="25dp"
+        android:background="@android:color/darker_gray" />
+
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView_address"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/imageView11"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="38dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="39dp"
+        android:layout_marginStart="13dp"
+        android:layout_toEndOf="@+id/imageView11"
         android:text="@string/stop_address"
         android:textSize="20sp" />
 
@@ -34,8 +42,9 @@
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="160dp"
-        android:orientation="vertical">
+        android:layout_marginTop="180dp"
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
 
         <ListView
             android:id="@+id/list_view"
