@@ -46,16 +46,12 @@ public class BusInformationService extends IntentService{
         int routeNumber = intent.getIntExtra("routeNumber", 0);
         JSONArray busLoc;
         JSONObject temp;
+        boolean run = true;
 
-        String name = "name";
-        double lat = 0;
-        double lng = 0;
-        double eta = 0;
-        //TODO Remove this variable
-        double inc = 0;
         // Temp loop to illustrate real time updates
-        for (int i = 0; i < 100; i++)
+        while (run)
         {
+            Bundle bundle = new Bundle();
 
             // Getting data from Lynx/DoubleMap API
             try {
@@ -64,43 +60,61 @@ public class BusInformationService extends IntentService{
                 for (int j = 0; j < busLoc.length(); j++) {
                     temp = busLoc.getJSONObject(j);
 
-                    if(temp.optInt("route") == routeNumber){
-                        name = temp.optString("name");
-                        lat = temp.optDouble("lat");
-                        lng = temp.optDouble("lon");
+                    if (adminMode)
+                    {
+                        int routeNumber2 = intent.getIntExtra("routeNumber2", 0);
+                        int routeNumber3 = intent.getIntExtra("routeNumber3", 0);
+                        int routeNumber4 = intent.getIntExtra("routeNumber4", 0);
+                        int routeNumber5 = intent.getIntExtra("routeNumber5", 0);
 
-                        System.out.println("Updating Bus Location...");
-                        System.out.println(lat);
-                        System.out.println(lng);
-                        break;
+                        if(temp.optInt("route") == routeNumber)
+                        {
+                            bundle.putString("name1",temp.optString("name"));
+                            bundle.putDouble("lat1", temp.optDouble("lat"));
+                            bundle.putDouble("lng1", temp.optDouble("lon"));
+                        }
+                        else if(temp.optInt("route") == routeNumber2)
+                        {
+                            bundle.putString("name2",temp.optString("name"));
+                            bundle.putDouble("lat2", temp.optDouble("lat"));
+                            bundle.putDouble("lng2", temp.optDouble("lon"));
+                        }
+                        else if(temp.optInt("route") == routeNumber3)
+                        {
+                            bundle.putString("name3",temp.optString("name"));
+                            bundle.putDouble("lat3", temp.optDouble("lat"));
+                            bundle.putDouble("lng3", temp.optDouble("lon"));
+                        }
+                        else if(temp.optInt("route") == routeNumber4)
+                        {
+                            bundle.putString("name4",temp.optString("name"));
+                            bundle.putDouble("lat4", temp.optDouble("lat"));
+                            bundle.putDouble("lng4", temp.optDouble("lon"));
+                        }
+                        else if(temp.optInt("route") == routeNumber5)
+                        {
+                            bundle.putString("name5",temp.optString("name"));
+                            bundle.putDouble("lat5", temp.optDouble("lat"));
+                            bundle.putDouble("lng5", temp.optDouble("lon"));
+                        }
+                    }
+                    else
+                    {
+                        if(temp.optInt("route") == routeNumber)
+                        {
+                            bundle.putString("name",temp.optString("name"));
+                            bundle.putDouble("lat", temp.optDouble("lat"));
+                            bundle.putDouble("lng", temp.optDouble("lon"));
+                            break;
+                        }
                     }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                run = false;
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-
-
-            // Test for admin vs standard mode. If admin mode create 3 marks. If standard create one.
-            // This section will be removed and replaced with logic to get all the supported buses
-            // when in admin mode and only the closest in standard mode.
-            Bundle bundle = new Bundle();
-            if (adminMode)
-            {
-                bundle.putDouble("lat1", lat);
-                bundle.putDouble("lng1", lng);
-                bundle.putDouble("lat2", lat+1);
-                bundle.putDouble("lng2", lng+1);
-                bundle.putDouble("lat3", lat+2);
-                bundle.putDouble("lng3", lng+2);
-            }
-            else
-            {
-                bundle.putString("name",name);
-                bundle.putDouble("lat", lat);
-                bundle.putDouble("lng", lng);
-                bundle.putDouble("ETA", eta);
+                run = false;
             }
 
             rec.send(Activity.RESULT_OK, bundle);
@@ -114,6 +128,7 @@ public class BusInformationService extends IntentService{
             }
             catch (InterruptedException e)
             {
+                run = false;
             }
         }
     }

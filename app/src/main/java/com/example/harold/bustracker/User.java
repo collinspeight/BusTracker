@@ -46,19 +46,13 @@ import java.util.Scanner;
 public class User extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private BusInformationReceiver busInformationReceiver;
-    private FirebaseAuth mAuth;
-    private Button signOut;
     MapView mMapView;
-    private LatLng busStopLocation;
     private GoogleMap map;
-    private int busStopNumber, routeNumber;
-    private LatLng[] busStopsLocation;
+    private int routeNumber;
     ArrayList<LatLng> path;
-    private int[] stops;
     private boolean debug = false;
     //Saves the marker position so it can be removed
     private Marker bus;
-    private Marker stop;
     private Intent intent;
 
     @Override
@@ -66,12 +60,6 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.user);
-
-        initializeBusStopsLocation();
-
-        // Get bus stop number and location
-        busStopNumber = getIntent().getIntExtra("BusStop", 0);
-        busStopLocation = busStopsLocation[busStopNumber];
 
         routeNumber = getIntent().getIntExtra("RouteNumber", 0);
         // Create service receiver
@@ -293,14 +281,10 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     {
         //If marker has already been placed. Remove it.
         if(bus!= null)
-            animateBusMarker(name, bus.getPosition(),latlng, false);
+            animateBusMarker(name, bus.getPosition(), latlng, false);
         else {
             bus = map.addMarker(new MarkerOptions().position(latlng).title("Bus: " + name));
         }
-        if(stop!= null)
-            stop.remove();
-
-        stop = map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
     }
 
 
@@ -309,7 +293,6 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     // TODO Might need to edit this method for multiple bus or just do the regular
     public void animateBusMarker(final String name, final LatLng startPosition, final LatLng toPosition,
                               final boolean hideMarker) {
-
         bus.remove();
 
         bus = map.addMarker(new MarkerOptions()
@@ -348,18 +331,6 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
                 }
             }
         });
-    }
-
-
-    private void initializeBusStopsLocation()
-    {
-        // Hard coded bus stop locations map. Key: bus stop number, Value: location (lat, lng)
-        busStopsLocation = new LatLng[5];
-        busStopsLocation[0] = new LatLng(1,2);
-        busStopsLocation[1] = new LatLng(3,4);
-        busStopsLocation[2] = new LatLng(5,6);
-        busStopsLocation[3] = new LatLng(7,8);
-        busStopsLocation[4] = new LatLng(9,10);
     }
 
     // Parsing JSON from raw assets

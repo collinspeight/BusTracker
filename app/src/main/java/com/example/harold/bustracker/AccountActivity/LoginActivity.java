@@ -203,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
                     i.putExtra("RouteNumber2", 424);
                     i.putExtra("RouteNumber3", 434);
                     i.putExtra("RouteNumber4", 423);
-                    i.putExtra("RouteNumber5", 425);
+                    i.putExtra("RouteNumber5", 596);
                     startActivity(i);
                     finish();
                 } else { // Put user login actions here

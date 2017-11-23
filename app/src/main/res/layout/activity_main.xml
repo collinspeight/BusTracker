@@ -25,7 +25,7 @@
         android:layout_alignBottom="@+id/button1"
         android:layout_alignParentStart="true"
         android:layout_marginStart="46dp"
-        android:text="Link XX:"
+        android:text="Route 567:"
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 
@@ -46,7 +46,7 @@
         android:layout_alignBaseline="@+id/button2"
         android:layout_alignBottom="@+id/button2"
         android:layout_alignStart="@+id/textView1"
-        android:text="Link XX:"
+        android:text="Route 424:"
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 
@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView2"
         android:layout_alignTop="@+id/button3"
-        android:text="Link XX:"
+        android:text="Route 434:"
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 
@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView3"
         android:layout_alignTop="@+id/button4"
-        android:text="Link XX:"
+        android:text="Route 423:"
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 
@@ -103,7 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/textView4"
         android:layout_alignTop="@+id/button5"
-        android:text="Link XX:"
+        android:text="Route 596:"
         android:textColor="@android:color/black"
         android:textSize="22sp" />
 
