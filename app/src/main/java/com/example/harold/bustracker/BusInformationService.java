@@ -47,6 +47,7 @@ public class BusInformationService extends IntentService{
         JSONArray busLoc;
         JSONObject temp;
 
+        String name = "name";
         double lat = 0;
         double lng = 0;
         double eta = 0;
@@ -55,16 +56,6 @@ public class BusInformationService extends IntentService{
         // Temp loop to illustrate real time updates
         for (int i = 0; i < 100; i++)
         {
-            try
-            {
-                synchronized (this)
-                {
-                    wait(5000);
-                }
-            }
-            catch (InterruptedException e)
-            {
-            }
 
             // Getting data from Lynx/DoubleMap API
             try {
@@ -74,9 +65,11 @@ public class BusInformationService extends IntentService{
                     temp = busLoc.getJSONObject(j);
 
                     if(temp.optInt("route") == routeNumber){
+                        name = temp.optString("name");
                         lat = temp.optDouble("lat");
                         lng = temp.optDouble("lon");
 
+                        System.out.println("Updating Bus Location...");
                         System.out.println(lat);
                         System.out.println(lng);
                         break;
@@ -104,12 +97,24 @@ public class BusInformationService extends IntentService{
             }
             else
             {
+                bundle.putString("name",name);
                 bundle.putDouble("lat", lat);
                 bundle.putDouble("lng", lng);
                 bundle.putDouble("ETA", eta);
             }
 
             rec.send(Activity.RESULT_OK, bundle);
+
+            try
+            {
+                synchronized (this)
+                {
+                    wait(10000);
+                }
+            }
+            catch (InterruptedException e)
+            {
+            }
         }
     }
 
