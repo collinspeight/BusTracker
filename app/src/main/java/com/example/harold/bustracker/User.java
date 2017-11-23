@@ -160,7 +160,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        if (marker == bus){
+        if (marker.equals(bus)){
             return true;
         }
 
