@@ -15,24 +15,23 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="150dp"
+        android:id="@+id/textView_route1"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button1"
         android:layout_alignBottom="@+id/button1"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="46dp"
-        android:text="Link XX:"
+        android:layout_alignStart="@+id/textView_route2"
+        android:lines="2"
+        android:text="@string/route1"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/toolbar"
         android:layout_marginEnd="31dp"
@@ -40,77 +39,81 @@
         android:text="Select" />
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="150dp"
+        android:id="@+id/textView_route2"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button2"
-        android:layout_alignBottom="@+id/button2"
-        android:layout_alignStart="@+id/textView1"
-        android:text="Link XX:"
+        android:layout_above="@+id/button3"
+        android:layout_alignStart="@+id/textView_route3"
+        android:lines="2"
+        android:text="@string/route2"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_alignStart="@+id/button1"
-        android:layout_below="@+id/textView1"
+        android:layout_below="@+id/textView_route1"
         android:layout_marginTop="39dp"
         android:text="Select" />
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="150dp"
+        android:id="@+id/textView_route3"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_alignTop="@+id/button3"
-        android:text="Link XX:"
+        android:layout_above="@+id/button4"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="18dp"
+        android:lines="2"
+        android:text="@string/route3"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/button3"
         android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_alignStart="@+id/button2"
         android:layout_below="@+id/button2"
         android:layout_marginTop="25dp"
         android:text="Select" />
 
     <TextView
-        android:id="@+id/textView4"
-        android:layout_width="150dp"
+        android:id="@+id/textView_route4"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView3"
-        android:layout_alignTop="@+id/button4"
-        android:text="Link XX:"
+        android:layout_above="@+id/button5"
+        android:layout_alignStart="@+id/textView_route3"
+        android:lines="2"
+        android:text="@string/route4"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/button4"
         android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_alignStart="@+id/button3"
         android:layout_below="@+id/button3"
         android:layout_marginTop="30dp"
         android:text="Select" />
 
     <TextView
-        android:id="@+id/textView5"
-        android:layout_width="150dp"
+        android:id="@+id/textView_route5"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/textView4"
-        android:layout_alignTop="@+id/button5"
-        android:text="Link XX:"
+        android:layout_alignBottom="@+id/button5"
+        android:layout_alignStart="@+id/textView_route4"
+        android:lines="2"
+        android:text="@string/route5"
         android:textColor="@android:color/black"
-        android:textSize="22sp" />
+        android:textSize="15sp" />
 
     <Button
         android:id="@+id/button5"
         android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_alignStart="@+id/button4"
         android:layout_below="@+id/button4"
         android:layout_marginTop="30dp"

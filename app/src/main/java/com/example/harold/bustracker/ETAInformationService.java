@@ -8,9 +8,9 @@ package com.example.harold.bustracker;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +20,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
