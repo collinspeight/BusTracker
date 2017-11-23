@@ -119,6 +119,10 @@ public class BusETA extends AppCompatActivity {
 
         try {
             getRouteNames();
+            if (debug) {
+                System.out.println(routes);
+                System.out.println(routeNames);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -170,21 +174,21 @@ public class BusETA extends AppCompatActivity {
     private void getRouteNames() throws JSONException {
         JSONArray routeArray = getJSONFromRaw(0);
         JSONObject temp;
-        int length;
+        int rlength, jlength;
 
         // Get route names
-        length = routeArray.length();
-        for(int i = 0; i < length; i++) {
-            temp = routeArray.getJSONObject(i);
+        rlength = routes.size();
+        jlength = routeArray.length();
+        for(int i = 0; i < rlength; i++) {
 
-            if (routes.contains(temp.optInt("id"))) {
+            for(int j = 0; j < jlength; j++) {
 
-                routeNames.add(temp.getString("name"));
+                temp = routeArray.getJSONObject(j);
 
-                if (routes.size() == routeNames.size()) {
-                    if (debug) {
-                        System.out.println(routeNames);
-                    }
+                if (routes.get(i).equals(temp.optInt("id"))) {
+
+                    routeNames.add(temp.getString("name"));
+
                     break;
                 }
             }
