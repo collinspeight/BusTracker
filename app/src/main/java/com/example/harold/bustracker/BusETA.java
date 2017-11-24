@@ -3,6 +3,7 @@ package com.example.harold.bustracker;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -46,6 +47,7 @@ public class BusETA extends AppCompatActivity {
     private ArrayList<Integer> arrivals =  new ArrayList<>();
     private ETAInformationReceiver etaInformationReceiver;
     private boolean debug = false;
+    private String url;
 
 
     @Override
@@ -65,14 +67,15 @@ public class BusETA extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "For more scheduling information", Snackbar.LENGTH_LONG)
+                        .setAction("VISIT", new FABListener()).show();
             }
         });
 
         String stopID = getIntent().getStringExtra("StopID");
         String name = getIntent().getStringExtra("Name");
         String stopCode = getIntent().getStringExtra("StopCode");
+        url = getIntent().getStringExtra("URL");
 
 
         TextView nameTextView = (TextView) findViewById(R.id.textView_address);
@@ -87,9 +90,9 @@ public class BusETA extends AppCompatActivity {
         intent.putExtra("receiver", etaInformationReceiver);
         intent.putExtra("stopID", stopID);
         startService(intent);
-
-
     }
+
+
 
     /**
      * Creates a service receiver that will be notified of results of the BusInformationService
@@ -114,6 +117,18 @@ public class BusETA extends AppCompatActivity {
             }
         });
     }
+
+    public class FABListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(url)));
+
+        }
+    }
+
 
     private void populateListView() {
 

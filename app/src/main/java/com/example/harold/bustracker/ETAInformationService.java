@@ -60,7 +60,13 @@ public class ETAInformationService extends IntentService{
         try {
             stopJSON = getJSONFromURL("http://golynx.doublemap.com/map/v2/eta?stop=" + stopID).getJSONObject("etas").getJSONObject(stopID);
 
-            name = stopJSON.getString("name");
+            try {
+                name = stopJSON.getString("name");
+            }
+            catch(JSONException e){
+                name = "N/A";
+            }
+
             etaArray = stopJSON.getJSONArray("etas");
             System.out.println(name);
             System.out.println(etaArray);
@@ -75,6 +81,7 @@ public class ETAInformationService extends IntentService{
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
+
 
 
         // Test for admin vs standard mode. If admin mode create 3 marks. If standard create one.

@@ -182,13 +182,21 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
+        if(marker.equals(bus1) || marker.equals(bus2) ||
+                marker.equals(bus3) || marker.equals(bus4) ||
+                marker.equals(bus5)){
+            return true;
+        }
+
         //Toast.makeText(getApplicationContext(), marker.getTag().toString(), Toast.LENGTH_SHORT).show();
         Intent i = new Intent(Admin.this, BusETA.class);
         i.putExtra("StopID", marker.getTag().toString());
         i.putExtra("Name", marker.getTitle());
+        i.putExtra("StopCode", marker.getSnippet());
+        i.putExtra("URL", "http://www.golynx.com/maps-schedules/routes-schedules.stml");
         stopService(intent);
         startActivity(i);
-        return false;
+        return true;
     }
 
     private void setBusStops() throws JSONException {
@@ -474,7 +482,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
         Marker marker = map.addMarker(new MarkerOptions()
                 .position(latlng)
                 .title(name)
-                .snippet("stop code:" + code)
+                .snippet("Stop Code: " + code)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_icon)));
 
         marker.setTag(id);

@@ -54,13 +54,14 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     private GoogleMap map;
     private int busStopNumber, routeNumber;
     private LatLng[] busStopsLocation;
-    LatLng center;
+    private LatLng center;
     private boolean debug = false;
     private  Toolbar toolbar;
     //Saves the marker position so it can be removed
     private Marker bus;
     private Marker stop;
     private Intent intent;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +190,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         i.putExtra("StopID", marker.getTag().toString());
         i.putExtra("Name", marker.getTitle());
         i.putExtra("StopCode", marker.getSnippet());
+        i.putExtra("URL", url);
         stopService(intent);
         startActivity(i);
         overridePendingTransition(R.anim.righttoleft,R.anim.stable);
@@ -247,13 +249,13 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
                     System.out.println(stops);
                 }
 
-
                 // Adding Path and changing toolbar color
                 drawRoute(path, routeObj.getString("color"));
 
+                url = routeObj.getString("schedule_url");
+
                 break;
             }
-
 
         }
         // Adding stop markers
