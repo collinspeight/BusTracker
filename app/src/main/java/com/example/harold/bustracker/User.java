@@ -298,9 +298,9 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     private void drawRoute(ArrayList<LatLng> path, String color) {
         int hexColor = Integer.decode("0x7f" + color);
         PolylineOptions rectOptions = new PolylineOptions()
-                                        .color(hexColor)
-                                        .jointType(JointType.ROUND)
-                                        .width(15.0f);
+                .color(hexColor)
+                .jointType(JointType.ROUND)
+                .width(15.0f);
 
         rectOptions.addAll(path);
 
@@ -329,7 +329,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     // specific marker would change instead of just one marker.
     // TODO Might need to edit this method for multiple bus or just do the regular
     public void animateBusMarker(final String name, final LatLng startPosition, final LatLng toPosition,
-                              final boolean hideMarker) {
+                                 final boolean hideMarker) {
 
         bus.remove();
 
