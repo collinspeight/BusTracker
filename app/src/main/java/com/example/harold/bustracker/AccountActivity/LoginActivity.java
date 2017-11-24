@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(LoginActivity.this, "Logging in... ", Toast.LENGTH_LONG).show();
+        Toast.makeText(LoginActivity.this, "Logging in... ", Toast.LENGTH_SHORT).show();
 
         // Authenticate user
         mAuth.signInWithEmailAndPassword(email, password)
@@ -194,8 +194,6 @@ public class LoginActivity extends AppCompatActivity {
                 boolean isAdmin = (boolean)dataSnapshot.child("Users").child(userID).child("Admin").getValue();
 
                 if(isAdmin) { // Put administrator login actions here
-                    Toast.makeText(LoginActivity.this, "Administrator login successful!!",
-                            Toast.LENGTH_LONG).show();
                     // Change the class for Admin view
                     Intent i = new Intent(LoginActivity.this, Admin.class);
                     i.putExtra("BusStop", 0);
@@ -207,8 +205,6 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(i);
                     finish();
                 } else { // Put user login actions here
-                    Toast.makeText(LoginActivity.this, "Standard login successful!!",
-                            Toast.LENGTH_LONG).show();
                     // Change the class for User view
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();

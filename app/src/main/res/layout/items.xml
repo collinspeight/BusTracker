@@ -8,38 +8,42 @@
 
     <ImageView
         android:id="@+id/imageview_circle"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignBottom="@+id/textview_route"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="46dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="31dp"
         app:srcCompat="@drawable/circle" />
 
     <ImageView
         android:id="@+id/imageView5"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:layout_alignEnd="@+id/imageview_circle"
-        android:layout_below="@+id/imageview_circle"
-        android:layout_marginTop="15dp"
+
+        android:layout_alignBottom="@+id/textview_arrival"
+        android:layout_alignStart="@+id/textview_route"
         app:srcCompat="@drawable/circle" />
 
     <TextView
         android:id="@+id/textview_route"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/imageView5"
         android:layout_marginStart="13dp"
         android:layout_toEndOf="@+id/imageview_circle"
-        android:text="Route : 434"
-        android:textSize="25dp" />
+        android:ellipsize="end"
+        android:lines="2"
+        android:text="Link 10: E. U.S. 192/ST. CLOUD EASTBOUND"
+        android:textSize="18dp" />
 
     <TextView
         android:id="@+id/textview_arrival"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView5"
         android:layout_alignStart="@+id/textview_route"
+        android:layout_below="@+id/textview_route"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="10dp"
         android:text="14 - 15 minutes"
         android:textSize="15dp" />
 

@@ -3,10 +3,13 @@ package com.example.harold.bustracker;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -48,9 +51,11 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     private BusInformationReceiver busInformationReceiver;
     MapView mMapView;
     private GoogleMap map;
-    private int routeNumber;
-    ArrayList<LatLng> path;
+    private int busStopNumber, routeNumber;
+    private LatLng[] busStopsLocation;
+    LatLng center;
     private boolean debug = false;
+    private  Toolbar toolbar;
     //Saves the marker position so it can be removed
     private Marker bus;
     private Intent intent;
@@ -60,6 +65,24 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.user);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        initializeBusStopsLocation();
+
+        // Set route name and back button on toolbar
+        getSupportActionBar().setTitle( getIntent().getStringExtra("RouteName"));
+        Drawable backArrow = getResources().getDrawable(android.support.v7.appcompat.R.drawable.abc_ic_ab_back_material);
+        backArrow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        getSupportActionBar().setHomeAsUpIndicator(backArrow);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setSubtitleTextColor(Color.WHITE);
+
+        // Get bus stop number and location
+        busStopNumber = getIntent().getIntExtra("BusStop", 0);
+        busStopLocation = busStopsLocation[busStopNumber];
 
         routeNumber = getIntent().getIntExtra("RouteNumber", 0);
         // Create service receiver
@@ -97,6 +120,12 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     protected void onDestroy(){
         super.onDestroy();
         stopService(intent);
@@ -127,8 +156,9 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        map.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
 
+        Toast.makeText(User.this, "Tap on bus stops for arrival time",
+                Toast.LENGTH_LONG).show();
         // Create marker for bus stop
         try {
             setBusStops();
@@ -138,7 +168,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
 
 
 
-        map.moveCamera(CameraUpdateFactory.newLatLng(path.get(path.size()/2)));
+        map.moveCamera(CameraUpdateFactory.newLatLng(center));
         map.animateCamera(CameraUpdateFactory.zoomTo(12.5f));
         map.setOnMarkerClickListener(this);
 
@@ -148,7 +178,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-        if (marker == bus){
+        if (marker.equals(bus)){
             return true;
         }
 
@@ -159,6 +189,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         i.putExtra("StopCode", marker.getSnippet());
         stopService(intent);
         startActivity(i);
+        overridePendingTransition(R.anim.righttoleft,R.anim.stable);
         return true;
     }
 
@@ -166,8 +197,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
         JSONArray routeArray = getJSONFromRaw(0);
         JSONArray stopsArray = getJSONFromRaw(1);
         JSONObject temp, routeObj;
-        String color;
-        path = new ArrayList<>();
+        ArrayList<LatLng>path = new ArrayList<>();
         ArrayList<Integer> stops = new ArrayList<>();
         int length;
 
@@ -194,6 +224,8 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
                     }
                 }
 
+                center = path.get(path.size()/2);
+
                 if(debug) {
                     System.out.println(path);
                 }
@@ -214,9 +246,8 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
                 }
 
 
-                // Adding Path
-                color = routeObj.getString("color");
-                drawRoute(path, color);
+                // Adding Path and changing toolbar color
+                drawRoute(path, routeObj.getString("color"));
 
                 break;
             }

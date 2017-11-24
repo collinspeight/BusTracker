@@ -1,6 +1,7 @@
 package com.example.harold.bustracker;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,7 +16,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -37,10 +40,12 @@ import java.util.Scanner;
 public class BusETA extends AppCompatActivity {
 
 
-    ArrayList<Integer> routes =  new ArrayList<>();
-    ArrayList<String> colors =  new ArrayList<>();
-    ArrayList<Integer> arrivals =  new ArrayList<>();
+    private ArrayList<Integer> routes =  new ArrayList<>();
+    private ArrayList<String> routeNames =  new ArrayList<>();
+    private ArrayList<String> colors =  new ArrayList<>();
+    private ArrayList<Integer> arrivals =  new ArrayList<>();
     private ETAInformationReceiver etaInformationReceiver;
+    private boolean debug = false;
 
 
     @Override
@@ -68,6 +73,7 @@ public class BusETA extends AppCompatActivity {
         String stopID = getIntent().getStringExtra("StopID");
         String name = getIntent().getStringExtra("Name");
         String stopCode = getIntent().getStringExtra("StopCode");
+
 
         TextView nameTextView = (TextView) findViewById(R.id.textView_address);
         nameTextView.setText(name);
@@ -99,15 +105,10 @@ public class BusETA extends AppCompatActivity {
                     routes =resultData.getIntegerArrayList("routes");
                     colors = resultData.getStringArrayList("colors");
                     arrivals = resultData.getIntegerArrayList("arrivals");
-//                    routes.add(434);
-//                    routes.add(414);
-//                    routes.add(424);
-//                    colors.add("00A884");
-//                    colors.add("00A884");
-//                    colors.add("00A884");
-//                    arrivals.add(0);
-//                    arrivals.add(1);
-//                    arrivals.add(3);
+                    if(routes.size() == 0){
+                        Toast.makeText(BusETA.this, "Check back later..",
+                                Toast.LENGTH_LONG).show();
+                    }
                     populateListView();
                 }
             }
@@ -116,6 +117,15 @@ public class BusETA extends AppCompatActivity {
 
     private void populateListView() {
 
+        try {
+            getRouteNames();
+            if (debug) {
+                System.out.println(routes);
+                System.out.println(routeNames);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         CustomAdapter customAdapter = new CustomAdapter();
 
@@ -150,7 +160,7 @@ public class BusETA extends AppCompatActivity {
             TextView arrival = (TextView) view.findViewById(R.id.textview_arrival);
 
             imageView.setColorFilter(Integer.decode("0x7f" + colors.get(i)));
-            route.setText(String.valueOf(routes.get(i)));
+            route.setText(routeNames.get(i));
             if(arrivals.get(i) > 1){
                 arrival.setText(String.valueOf(arrivals.get(i) - 1) + "-" + String.valueOf(arrivals.get(i)) + " minutes");
             } else {
@@ -159,6 +169,71 @@ public class BusETA extends AppCompatActivity {
 
             return view;
         }
+    }
+
+    private void getRouteNames() throws JSONException {
+        JSONArray routeArray = getJSONFromRaw(0);
+        JSONObject temp;
+        int rlength, jlength;
+
+        // Get route names
+        rlength = routes.size();
+        jlength = routeArray.length();
+        for(int i = 0; i < rlength; i++) {
+
+            for(int j = 0; j < jlength; j++) {
+
+                temp = routeArray.getJSONObject(j);
+
+                if (routes.get(i).equals(temp.optInt("id"))) {
+
+                    routeNames.add(temp.getString("name"));
+
+                    break;
+                }
+            }
+        }
+    }
+
+    // Parsing JSON from raw assets
+    // 0  = routes
+    // 1  = stops
+    private JSONArray getJSONFromRaw (int toggle) {
+
+        String forecastJsonStr;
+        InputStream inputStream;
+        JSONArray jsonArray = null;
+
+        try {
+
+            Resources res = getResources();
+
+            // Read the input stream into a String
+            if ( toggle == 0) {
+                inputStream = res.openRawResource(R.raw.routes);
+            } else {
+                inputStream = res.openRawResource(R.raw.stops);
+            }
+
+            Scanner scanner = new Scanner(inputStream);
+
+            StringBuilder builder = new StringBuilder();
+
+            while(scanner.hasNextLine()) {
+                builder.append(scanner.nextLine());
+            }
+
+            forecastJsonStr = builder.toString();
+            jsonArray = new JSONArray(forecastJsonStr);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            return jsonArray;
+        }
+
+
     }
 
     @Override

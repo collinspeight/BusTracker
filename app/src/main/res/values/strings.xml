@@ -16,5 +16,10 @@
     <string name="title_activity_eta">eta</string>
     <string name="title_activity_bus_et">BusETA</string>
     <string name="stop_logo">stop logo</string>
-    <string name="stop_address">MAITLAND CENTER PKY AND N KELLER RD</string>>
+    <string name="stop_address">MAITLAND CENTER PKY AND N KELLER RD</string>
+    <string name="route1">Link 426: POINCIANA/CIRCULATOR CIRCULATOR</string>
+    <string name="route2">Link 08: W. OAK RIDGE RD/INTL. DR INBOUND</string>
+    <string name="route3">Link 10: E. U.S. 192/ST. CLOUD EASTBOUND</string>
+    <string name="route4">Link 07: S. ORANGE AVE./FLORIDA MALL INBOUND</string>
+    <string name="route5">Link 50: DOWNTOWN ORLANDO/MAGIC KINGDOM INBOUND</string>>
 </resources>

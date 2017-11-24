@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
@@ -31,18 +32,33 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitleTextColor(Color.WHITE);
 
         FloatingActionButton signOut = (FloatingActionButton) findViewById(R.id.fab_signout);
-        Button route1 = (Button) findViewById(R.id.button1);
-        Button route2 = (Button) findViewById(R.id.button2);
-        Button route3 = (Button) findViewById(R.id.button3);
-        Button route4 = (Button) findViewById(R.id.button4);
-        Button route5 = (Button) findViewById(R.id.button5);
+
+        Button busStop1 = (Button) findViewById(R.id.button1);
+        Button busStop2 = (Button) findViewById(R.id.button2);
+        Button busStop3 = (Button) findViewById(R.id.button3);
+        Button busStop4 = (Button) findViewById(R.id.button4);
+        Button busStop5 = (Button) findViewById(R.id.button5);
+        final TextView textView1 = (TextView) findViewById(R.id.textView_route1);
+        final TextView textView2 = (TextView) findViewById(R.id.textView_route2);
+        final TextView textView3 = (TextView) findViewById(R.id.textView_route3);
+        final TextView textView4 = (TextView) findViewById(R.id.textView_route4);
+        final TextView textView5 = (TextView) findViewById(R.id.textView_route5);
+
+        textView1.setText(R.string.route1);
+        textView2.setText(R.string.route2);
+        textView3.setText(R.string.route3);
+        textView4.setText(R.string.route4);
+        textView5.setText(R.string.route5);
+
 
         route1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("RouteNumber", 567);
+                i.putExtra("RouteName", textView1.getText());
                 startActivity(i);
+
             }
         });
 
@@ -51,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("RouteNumber", 424);
+                i.putExtra("RouteName", textView2.getText());
                 startActivity(i);
+
             }
         });
 
@@ -60,7 +78,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("RouteNumber", 434);
+                i.putExtra("RouteName", textView3.getText());
                 startActivity(i);
+
             }
         });
 
@@ -69,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
                 i.putExtra("RouteNumber", 423);
+                i.putExtra("RouteName", textView4.getText());
                 startActivity(i);
+
             }
         });
 
@@ -77,8 +99,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
+
+                i.putExtra("BusStop", 4);
                 i.putExtra("RouteNumber", 596);
+                i.putExtra("RouteName", textView5.getText());
                 startActivity(i);
+
             }
         });
 
