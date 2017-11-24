@@ -3,10 +3,14 @@ package com.example.harold.bustracker;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -61,12 +65,19 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
     private Marker bus5;
     private Intent intent;
     private LatLng camera = new LatLng(28.316620, -81.447269);
+    private  Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.admin);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Admin Mode");
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setSubtitleTextColor(Color.WHITE);
+        FloatingActionButton signOut = (FloatingActionButton) findViewById(R.id.fab_signout);
 
         routeNumber = new ArrayList<>();
 
@@ -81,7 +92,7 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
         // Start service
         intent = new Intent(this, BusInformationService.class);
         intent.putExtra("receiver", busInformationReceiver);
-        intent.putExtra("adminMode", false);
+        intent.putExtra("adminMode", true);
         intent.putExtra("routeNumber", routeNumber.get(0));
         intent.putExtra("routeNumber2", routeNumber.get(1));
         intent.putExtra("routeNumber3", routeNumber.get(2));
@@ -93,8 +104,6 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
         mAuth = FirebaseAuth.getInstance();
-
-        signOut = findViewById(R.id.logOut);
 
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -689,5 +698,6 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
                 }
             }
         });
+
     }
 }
