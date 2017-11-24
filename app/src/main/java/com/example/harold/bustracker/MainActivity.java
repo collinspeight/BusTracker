@@ -7,17 +7,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.json.JSONException;
+
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private String[] routeNames = {"Link 426: POINCIANA/CIRCULATOR CIRCULATOR", "Link 08: W. OAK RIDGE RD/INTL. DR INBOUND",
+                                    "Link 10: E. U.S. 192/ST. CLOUD EASTBOUND", "Link 07: S. ORANGE AVE./FLORIDA MALL INBOUND",
+                                    "Link 50: DOWNTOWN ORLANDO/MAGIC KINGDOM INBOUND"};
+    private String[] colors = {"B1BCE8", "89CD66", "63C9B3", "557393", "A87000"};
+
+    private int[] routeNumbers = {567, 424, 434, 423, 596};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,82 +45,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitleTextColor(Color.WHITE);
 
         FloatingActionButton signOut = (FloatingActionButton) findViewById(R.id.fab_signout);
-        Button busStop1 = (Button) findViewById(R.id.button1);
-        Button busStop2 = (Button) findViewById(R.id.button2);
-        Button busStop3 = (Button) findViewById(R.id.button3);
-        Button busStop4 = (Button) findViewById(R.id.button4);
-        Button busStop5 = (Button) findViewById(R.id.button5);
-        final TextView textView1 = (TextView) findViewById(R.id.textView_route1);
-        final TextView textView2 = (TextView) findViewById(R.id.textView_route2);
-        final TextView textView3 = (TextView) findViewById(R.id.textView_route3);
-        final TextView textView4 = (TextView) findViewById(R.id.textView_route4);
-        final TextView textView5 = (TextView) findViewById(R.id.textView_route5);
 
-        textView1.setText(R.string.route1);
-        textView2.setText(R.string.route2);
-        textView3.setText(R.string.route3);
-        textView4.setText(R.string.route4);
-        textView5.setText(R.string.route5);
-
-        busStop1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, User.class);
-                i.putExtra("BusStop", 0);
-                i.putExtra("RouteNumber", 567);
-                i.putExtra("RouteName", textView1.getText());
-                startActivity(i);
-
-            }
-        });
-
-        busStop2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, User.class);
-                i.putExtra("BusStop", 1);
-                i.putExtra("RouteNumber", 424);
-                i.putExtra("RouteName", textView2.getText());
-                startActivity(i);
-
-            }
-        });
-
-        busStop3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, User.class);
-                i.putExtra("BusStop", 2);
-                i.putExtra("RouteNumber", 434);
-                i.putExtra("RouteName", textView3.getText());
-                startActivity(i);
-
-            }
-        });
-
-        busStop4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, User.class);
-                i.putExtra("BusStop", 3);
-                i.putExtra("RouteNumber", 423);
-                i.putExtra("RouteName", textView4.getText());
-                startActivity(i);
-
-            }
-        });
-
-        busStop5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, User.class);
-                i.putExtra("BusStop", 4);
-                i.putExtra("RouteNumber", 596);
-                i.putExtra("RouteName", textView5.getText());
-                startActivity(i);
-
-            }
-        });
+        populateListView();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -120,5 +59,61 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void populateListView() {
+
+
+        CustomAdapter customAdapter = new CustomAdapter();
+
+        ListView list = (ListView) findViewById(R.id.listview_route);
+        list.setAdapter(customAdapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusSTop", position);
+                i.putExtra("RouteNumber", routeNumbers[position]);
+                i.putExtra("RouteName", routeNames[position]);
+                startActivity(i);
+                overridePendingTransition(R.anim.righttoleft,R.anim.stable);
+            }
+        }
+        );
+    }
+
+    class CustomAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return routeNames.length;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+
+            view = getLayoutInflater().inflate(R.layout.route_item, null);
+
+            ImageView imageView = view.findViewById(R.id.imageView_route);
+            imageView.setColorFilter(Integer.decode("0x7f" + colors[i]));
+
+            TextView route = (TextView) view.findViewById(R.id.textview_route);
+            route.setTextColor(Integer.decode("0x7f" + colors[i]));
+            route.setText(routeNames[i]);
+
+
+            return view;
+        }
     }
 }
