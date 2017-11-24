@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.harold.bustracker.BusETA"
+    tools:showIn="@layout/activity_bus_et">
+
+    <ImageView
+        android:id="@+id/imageView11"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:contentDescription="@string/stop_logo"
+        android:src="@drawable/bus_stop" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imageView11"
+        android:layout_marginTop="25dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/textView_address"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView11"
+        android:layout_marginBottom="39dp"
+        android:layout_marginStart="13dp"
+        android:layout_toEndOf="@+id/imageView11"
+        android:text="@string/stop_address"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="180dp"
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
+
+        <ListView
+            android:id="@+id/list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/stop_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView11"
+        android:layout_centerHorizontal="true"
+        android:text="TextView" />
+
+</RelativeLayout>

@@ -3,14 +3,21 @@ package com.example.harold.bustracker;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.harold.bustracker.AccountActivity.LoginActivity;
 import com.example.harold.bustracker.BusInformationReceiver;
@@ -22,6 +29,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -37,18 +46,21 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class User extends AppCompatActivity implements OnMapReadyCallback{
+public class User extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private BusInformationReceiver busInformationReceiver;
-    private FirebaseAuth mAuth;
-    private Button signOut;
     MapView mMapView;
     private LatLng busStopLocation;
     private GoogleMap map;
     private int busStopNumber, routeNumber;
     private LatLng[] busStopsLocation;
-    private int[] stops;
+    LatLng center;
     private boolean debug = false;
+    private  Toolbar toolbar;
+    //Saves the marker position so it can be removed
+    private Marker bus;
+    private Marker stop;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +68,19 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.user);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         initializeBusStopsLocation();
+
+        // Set route name and back button on toolbar
+        getSupportActionBar().setTitle( getIntent().getStringExtra("RouteName"));
+        Drawable backArrow = getResources().getDrawable(android.support.v7.appcompat.R.drawable.abc_ic_ab_back_material);
+        backArrow.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+        getSupportActionBar().setHomeAsUpIndicator(backArrow);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setSubtitleTextColor(Color.WHITE);
 
         // Get bus stop number and location
         busStopNumber = getIntent().getIntExtra("BusStop", 0);
@@ -67,36 +91,115 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
         setupServiceReceiver();
 
         // Start service
-        final Intent i = new Intent(this, BusInformationService.class);
-        i.putExtra("receiver", busInformationReceiver);
-        i.putExtra("adminMode", false);
-        startService(i);
+        intent = new Intent(this, BusInformationService.class);
+        intent.putExtra("receiver", busInformationReceiver);
+        intent.putExtra("adminMode", false);
+        intent.putExtra("routeNumber", routeNumber);
+        startService(intent);
 
         mMapView = findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
-        mAuth = FirebaseAuth.getInstance();
 
-        signOut = findViewById(R.id.logOut);
+    }
 
-        signOut.setOnClickListener(new View.OnClickListener() {
+
+    /**
+     * Creates a service receiver that will be notified of results of the BusInformationService
+     * once the service receiver subscribes to the service.
+     */
+    public void setupServiceReceiver() {
+        busInformationReceiver = new BusInformationReceiver(new Handler());
+        // This is where we specify what happens when data is received from the service
+        busInformationReceiver.setReceiver(new BusInformationReceiver.Receiver() {
             @Override
-            public void onClick(View v) {
-                stopService(i);
-                mAuth.signOut();
-                startActivity(new Intent(User.this, LoginActivity.class));
-                finish();
+            public void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == RESULT_OK) {
+                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")), resultData.getString("name"));
+                }
             }
         });
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        stopService(intent);
+        mMapView.onDestroy();
+    }
+    @Override
+    public void onLowMemory(){
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        stopService(intent);
+        mMapView.onPause();
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        mMapView.onResume();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+
+        Toast.makeText(User.this, "Tap on bus stops for arrival time",
+                Toast.LENGTH_LONG).show();
+        // Create marker for bus stop
+        try {
+            setBusStops();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(center));
+        map.animateCamera(CameraUpdateFactory.zoomTo(12.5f));
+        map.setOnMarkerClickListener(this);
+
+
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+
+        if (marker.equals(bus)){
+            return true;
+        }
+
+        //Toast.makeText(getApplicationContext(), marker.getTag().toString(), Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(User.this, BusETA.class);
+        i.putExtra("StopID", marker.getTag().toString());
+        i.putExtra("Name", marker.getTitle());
+        i.putExtra("StopCode", marker.getSnippet());
+        stopService(intent);
+        startActivity(i);
+        overridePendingTransition(R.anim.righttoleft,R.anim.stable);
+        return true;
+    }
 
     private void setBusStops() throws JSONException {
         JSONArray routeArray = getJSONFromRaw(0);
         JSONArray stopsArray = getJSONFromRaw(1);
         JSONObject temp, routeObj;
-        String color;
-        ArrayList<LatLng> path = new ArrayList<>();
+        ArrayList<LatLng>path = new ArrayList<>();
         ArrayList<Integer> stops = new ArrayList<>();
         int length;
 
@@ -123,6 +226,8 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
                     }
                 }
 
+                center = path.get(path.size()/2);
+
                 if(debug) {
                     System.out.println(path);
                 }
@@ -143,9 +248,8 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
                 }
 
 
-                // Adding Path
-                color = routeObj.getString("color");
-                drawRoute(path, color);
+                // Adding Path and changing toolbar color
+                drawRoute(path, routeObj.getString("color"));
 
                 break;
             }
@@ -164,96 +268,30 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
                 }
 
                 setStopAndInfo(new LatLng(temp.getDouble("lat"), temp.getDouble("lon")),
-                                temp.getString("name"),
-                                temp.getString("code"));
+                        temp.getString("name"),
+                        temp.getString("code"),
+                        temp.getInt("id"));
 
             }
 
         }
 
-
-
-
-
     }
 
-    /**
-     * Creates a service receiver that will be notified of results of the BusInformationService
-     * once the service receiver subscribes to the service.
-     */
-    public void setupServiceReceiver() {
-        busInformationReceiver = new BusInformationReceiver(new Handler());
-        // This is where we specify what happens when data is received from the service
-        busInformationReceiver.setReceiver(new BusInformationReceiver.Receiver() {
-            @Override
-            public void onReceiveResult(int resultCode, Bundle resultData) {
-                if (resultCode == RESULT_OK) {
-                    setBusInformation(new LatLng(resultData.getDouble("lat"), resultData.getDouble("lng")));
-                    double eta = resultData.getDouble("ETA");
-                    TextView textViewToUpdate = (TextView) findViewById(R.id.textView3);
-                    textViewToUpdate.setText("Bus' ETA: " + eta);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        mMapView.onDestroy();
-    }
-    @Override
-    public void onLowMemory(){
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
-    @Override
-    protected void onPause(){
-        super.onPause();
-        mMapView.onPause();
-    }
-    @Override
-    protected void onResume(){
-        super.onResume();
-        mMapView.onResume();
-    }
-    @Override
-    protected void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-        mMapView.onSaveInstanceState(outState);
-    }
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-
-        map.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-
-        // Create marker for bus stop
-       //map.addMarker(new MarkerOptions().position(new LatLng(28.5477008,-81.3902763)).title("Selected Bus Stop"));
-
-        try {
-            setBusStops();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(28.5477008,-81.3902763)));
-        map.animateCamera(CameraUpdateFactory.zoomTo(14.0f));
-
-
-    }
-
-    private void setStopAndInfo (LatLng latlng, String name, String code) {
+    private void setStopAndInfo (LatLng latlng, String name, String code, int id) {
 
         if(debug) {
             System.out.println(latlng);
             System.out.println(name + code);
         }
 
-        map.addMarker(new MarkerOptions()
+        Marker marker = map.addMarker(new MarkerOptions()
                 .position(latlng)
                 .title(name)
-                .snippet("stop code:" + code)
+                .snippet("Stop Code: " + code)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_icon)));
+
+        marker.setTag(id);
 
     }
 
@@ -272,12 +310,67 @@ public class User extends AppCompatActivity implements OnMapReadyCallback{
 
     }
 
-    private void setBusInformation(LatLng latlng)
+    private void setBusInformation(LatLng latlng, String name)
     {
-        //map.clear();
-        map.addMarker(new MarkerOptions().position(latlng).title("Current Location of Bus"));
-        map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
+        //If marker has already been placed. Remove it.
+        if(bus!= null)
+            animateBusMarker(name, bus.getPosition(),latlng, false);
+        else {
+            bus = map.addMarker(new MarkerOptions().position(latlng).title("Bus: " + name));
+        }
+        if(stop!= null)
+            stop.remove();
+
+        stop = map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
     }
+
+
+    // For Admin mode, change the parameters to accept the bus marker so that
+    // specific marker would change instead of just one marker.
+    // TODO Might need to edit this method for multiple bus or just do the regular
+    public void animateBusMarker(final String name, final LatLng startPosition, final LatLng toPosition,
+                              final boolean hideMarker) {
+
+        bus.remove();
+
+        bus = map.addMarker(new MarkerOptions()
+                .position(startPosition)
+                .title("Bus: " + name));
+
+
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+
+        final long duration = 10000;
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * toPosition.longitude + (1 - t)
+                        * startPosition.longitude;
+                double lat = t * toPosition.latitude + (1 - t)
+                        * startPosition.latitude;
+
+                bus.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        bus.setVisible(false);
+                    } else {
+                        bus.setVisible(true);
+                    }
+                }
+            }
+        });
+    }
+
 
     private void initializeBusStopsLocation()
     {
