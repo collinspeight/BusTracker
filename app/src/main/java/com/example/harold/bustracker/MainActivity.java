@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setSubtitleTextColor(Color.WHITE);
 
         FloatingActionButton signOut = (FloatingActionButton) findViewById(R.id.fab_signout);
-
         Button busStop1 = (Button) findViewById(R.id.button1);
         Button busStop2 = (Button) findViewById(R.id.button2);
         Button busStop3 = (Button) findViewById(R.id.button3);
@@ -50,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
         textView4.setText(R.string.route4);
         textView5.setText(R.string.route5);
 
-
-        route1.setOnClickListener(new View.OnClickListener() {
+        busStop1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 0);
                 i.putExtra("RouteNumber", 567);
                 i.putExtra("RouteName", textView1.getText());
                 startActivity(i);
@@ -62,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        route2.setOnClickListener(new View.OnClickListener() {
+        busStop2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 1);
                 i.putExtra("RouteNumber", 424);
                 i.putExtra("RouteName", textView2.getText());
                 startActivity(i);
@@ -73,10 +73,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        route3.setOnClickListener(new View.OnClickListener() {
+        busStop3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 2);
                 i.putExtra("RouteNumber", 434);
                 i.putExtra("RouteName", textView3.getText());
                 startActivity(i);
@@ -84,10 +85,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        route4.setOnClickListener(new View.OnClickListener() {
+        busStop4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
+                i.putExtra("BusStop", 3);
                 i.putExtra("RouteNumber", 423);
                 i.putExtra("RouteName", textView4.getText());
                 startActivity(i);
@@ -95,11 +97,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        route5.setOnClickListener(new View.OnClickListener() {
+        busStop5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, User.class);
-
                 i.putExtra("BusStop", 4);
                 i.putExtra("RouteNumber", 596);
                 i.putExtra("RouteName", textView5.getText());

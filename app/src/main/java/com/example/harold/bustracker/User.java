@@ -50,6 +50,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
 
     private BusInformationReceiver busInformationReceiver;
     MapView mMapView;
+    private LatLng busStopLocation;
     private GoogleMap map;
     private int busStopNumber, routeNumber;
     private LatLng[] busStopsLocation;
@@ -58,6 +59,7 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     private  Toolbar toolbar;
     //Saves the marker position so it can be removed
     private Marker bus;
+    private Marker stop;
     private Intent intent;
 
     @Override
@@ -296,9 +298,9 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     private void drawRoute(ArrayList<LatLng> path, String color) {
         int hexColor = Integer.decode("0x7f" + color);
         PolylineOptions rectOptions = new PolylineOptions()
-                                        .color(hexColor)
-                                        .jointType(JointType.ROUND)
-                                        .width(15.0f);
+                .color(hexColor)
+                .jointType(JointType.ROUND)
+                .width(15.0f);
 
         rectOptions.addAll(path);
 
@@ -312,10 +314,14 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     {
         //If marker has already been placed. Remove it.
         if(bus!= null)
-            animateBusMarker(name, bus.getPosition(), latlng, false);
+            animateBusMarker(name, bus.getPosition(),latlng, false);
         else {
             bus = map.addMarker(new MarkerOptions().position(latlng).title("Bus: " + name));
         }
+        if(stop!= null)
+            stop.remove();
+
+        stop = map.addMarker(new MarkerOptions().position(busStopLocation).title("Selected Bus Stop"));
     }
 
 
@@ -323,7 +329,8 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
     // specific marker would change instead of just one marker.
     // TODO Might need to edit this method for multiple bus or just do the regular
     public void animateBusMarker(final String name, final LatLng startPosition, final LatLng toPosition,
-                              final boolean hideMarker) {
+                                 final boolean hideMarker) {
+
         bus.remove();
 
         bus = map.addMarker(new MarkerOptions()
@@ -362,6 +369,18 @@ public class User extends AppCompatActivity implements OnMapReadyCallback, Googl
                 }
             }
         });
+    }
+
+
+    private void initializeBusStopsLocation()
+    {
+        // Hard coded bus stop locations map. Key: bus stop number, Value: location (lat, lng)
+        busStopsLocation = new LatLng[5];
+        busStopsLocation[0] = new LatLng(1,2);
+        busStopsLocation[1] = new LatLng(3,4);
+        busStopsLocation[2] = new LatLng(5,6);
+        busStopsLocation[3] = new LatLng(7,8);
+        busStopsLocation[4] = new LatLng(9,10);
     }
 
     // Parsing JSON from raw assets
