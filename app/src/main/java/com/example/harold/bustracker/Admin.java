@@ -1,6 +1,8 @@
 package com.example.harold.bustracker;
 
+import android.*;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -9,6 +11,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -161,6 +165,19 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
         super.onSaveInstanceState(outState);
         mMapView.onSaveInstanceState(outState);
     }
+
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+     {
+         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+         {
+             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                     == PackageManager.PERMISSION_GRANTED)
+             {
+                 map.setMyLocationEnabled(true);
+             }
+         }
+     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -177,6 +194,9 @@ public class Admin extends AppCompatActivity implements OnMapReadyCallback, Goog
         map.moveCamera(CameraUpdateFactory.newLatLng(camera));
         map.animateCamera(CameraUpdateFactory.zoomTo(10.5f));
         map.setOnMarkerClickListener(this);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},1);
     }
 
     @Override
